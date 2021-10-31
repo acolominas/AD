@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import client.DisplayImage;
-import java.io.IOException;
 
 
 /**
@@ -34,7 +33,7 @@ public class ImageManagerClient {
     public static void main(String[] args) {        
         do {            
             menuLogin();
-        } while (!login_correct && !exit);
+        } while (!login_correct);
         
         while(!exit) {
             menuMain();
@@ -92,7 +91,7 @@ public class ImageManagerClient {
        String description = sc.nextLine();
        
        sc = new Scanner(System.in);
-       System.out.println("Introduce Keywords");
+       System.out.println("Introduce Keywords (KW1,KW2) ");
        String keywords = sc.nextLine();
        
        sc = new Scanner(System.in);
@@ -100,7 +99,7 @@ public class ImageManagerClient {
        String author = sc.nextLine(); 
        
        sc = new Scanner(System.in);
-       System.out.println("Introduce Capture Date");
+       System.out.println("Introduce Capture Date (YYYY-MM-DD)");
        String capture_date = sc.nextLine(); 
        
        sc = new Scanner(System.in);
@@ -197,7 +196,7 @@ public class ImageManagerClient {
         else {            
             byte[] img = SOAPConnection.downloadImage(image.getFilename());
             FileUtil.SaveToDisk(img, image.getFilename());
-             DisplayImage abc = new DisplayImage("/tmp/"+image.getFilename());           
+            DisplayImage abc = new DisplayImage(image.getFilename());           
         }
     }
     private static void menuModificarImagen() {
@@ -227,7 +226,7 @@ public class ImageManagerClient {
        String title = sc.nextLine();
        if(!title.isEmpty()) image.setTitle(title);
        sc = new Scanner(System.in);
-       System.out.println("Introduce nuevas Keywords ["+image.getKeywords()+"]");
+       System.out.println("Introduce nuevas Keywords (KW1,KW2) ["+image.getKeywords()+"]");
        String keywords = sc.nextLine();
        if(!keywords.isEmpty()) image.setKeywords(keywords);
        sc = new Scanner(System.in);
@@ -235,7 +234,7 @@ public class ImageManagerClient {
        String author = sc.nextLine();
        if(!author.isEmpty()) image.setAuthor(author);
        sc = new Scanner(System.in);
-       System.out.println("Introduce nueva Capture Date ["+image.getCaptureDate()+"]");
+       System.out.println("Introduce nueva Capture Date (YYYY-MM-DD) ["+image.getCaptureDate()+"]");
        String capture_date = sc.nextLine();
        if(!capture_date.isEmpty()) image.setCaptureDate(capture_date);
        

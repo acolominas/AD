@@ -17,10 +17,11 @@ import ws.IOException_Exception;
 
 public class DisplayImage {
 
-    public DisplayImage(String Path) 
+    public DisplayImage(String filename)             
     {
+        String Dir = "/tmp/";
         try {
-            BufferedImage img=ImageIO.read(new File(Path));
+            BufferedImage img=ImageIO.read(new File(Dir+filename));
             ImageIcon icon=new ImageIcon(img);
             JFrame frame=new JFrame();
             frame.setLayout(new FlowLayout());
