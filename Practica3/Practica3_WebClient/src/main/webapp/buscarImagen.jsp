@@ -54,9 +54,9 @@ else response.sendRedirect("login.jsp");
                 out.println("<th>Actions</th>");
                 out.println("</tr>");
 
-                ListIterator<ws.Image> listIterator = images.listIterator();
+                ListIterator<Image> listIterator = images.listIterator();
                 while(listIterator.hasNext()) {
-                    ws.Image image = listIterator.next();
+                    Image image = listIterator.next();
                     out.println("<tr>");
                     out.println("<td>"+image.getTitle()+"</td>");
                     out.println("<td>"+image.getDescription()+"</td>");
@@ -67,18 +67,14 @@ else response.sendRedirect("login.jsp");
                     out.println("<td>"+image.getCaptureDate()+"</td>");
                     out.println("<td>"+image.getFilename()+"</td>");
                     out.println("<td>");
-                    out.println("<form method = 'POST'>");
-                    out.println("<input type='hidden' name='id' value='"+image.getId()+"'/>");
-                    out.println("<button type='submit' formaction='mostrarImagen'>View</button>");
-                    if (user.equals(image.getCreator())) {                                    
-                        out.println("<button type='submit' formaction=''>Modify</button>");
-                        out.println("<button type='submit' formaction=''>Delete</button>");                   
+                    out.println("<a href='display.jsp?id="+image.getId()+"'>View</a>");
+                    if (user.equals(image.getCreator())) {
+                        out.println("/ <a href='modificarImagen.jsp?id="+image.getId()+"'>Modify</a> / <a href='eliminarImagen.jsp?id="+image.getId()+"'>Delete</a>");
                     }
-                    out.println("</form>"); 
                     out.println("</td>");
                     out.println("</tr>");
                  }
-                 out.println("</table>");
+                out.println("</table>");
             }
         %>
         </div>

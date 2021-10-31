@@ -4,6 +4,7 @@
     Author     : alumne
 --%>
 
+<%@page import="java.util.Base64"%>
 <%@page import="ws.Image"%>
 <%@page import="client.SOAPConnection"%>
 <%@page contentType="text/html" session = "false" pageEncoding="UTF-8"%>
@@ -29,14 +30,15 @@ if (image == null){
         <title>Display Image</title>
     </head>
     <body>
-        <div align="center">
-        <%
-         out.println("<img src='Images/"+image.getFilename()+"'>");       
-        %>
-        </div>
-        <div align="center">
-        <a href="menu.jsp">Volver a menu</a>
-        </div>
+            <% byte[] img = SOAPConnection.downloadImage(image.getFilename());
+            String base64Image = Base64.getEncoder().encodeToString(img);            
+            out.println("<div align='center'>");
+            out.println("<img src='data:image/jpg;base64,"+base64Image+"'/>");
+            out.println("</div>");
+            out.println("<div align='center'>");
+            out.println("<a href=\"menu.jsp\">Volver a menu</a>");
+            out.println("</div>");
+            %>
         <!-- JavaScript -->
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>

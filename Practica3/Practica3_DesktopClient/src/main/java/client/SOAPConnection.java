@@ -179,24 +179,21 @@ public class SOAPConnection {
             return false;
         }   
     }
-    /*
-    public static Boolean uploadImage(Part part, String filename) {
+    public static Boolean uploadImage(String filename, String new_filename) {
+        String Path = "/home/alumne/Descargas/"+filename;
         
         try { // Call Web Service Operation
             ws.ImageManager_Service service = new ws.ImageManager_Service();
             ws.ImageManager port = service.getImageManagerPort();
-            // TODO initialize WS operation arguments here
-            //String filename = FileUtil.getFilename(part);
-            InputStream inputStream = part.getInputStream();
-	    byte[] fileContent = FileUtil.getFileContent(inputStream);
-            return (port.uploadImage(fileContent,filename) == 1);           
-                   
-        } catch (Exception ex) {
+            // TODO initialize WS operation arguments here                 
+	    byte[] fileContent = FileUtil.getFileContent(Path);
+            return (port.uploadImage(fileContent,new_filename) == 1);                           
+        } catch (IOException_Exception ex) {
             // TODO handle custom exceptions here
             return false;
         }   
     }
-    */
+
     public static byte[] downloadImage(String filename) {
         
         try { // Call Web Service Operation

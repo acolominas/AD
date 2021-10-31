@@ -4,6 +4,7 @@
     Author     : alumne
 --%>
 
+<%@page import="java.util.Base64"%>
 <%@page import="java.util.ListIterator"%>
 <%@page import="java.util.List"%>
 <%@page import="client.SOAPConnection,ws.Image" contentType="text/html" session="false" pageEncoding="UTF-8"%>
@@ -34,6 +35,7 @@ else response.sendRedirect("login.jsp");
                 <th>Storage Date</th>
                 <th>Capture Date</th>
                 <th>Filename</th>
+                <th>Image</th>
                 <th>Action</th>
             </tr>
         <%             
@@ -50,17 +52,13 @@ else response.sendRedirect("login.jsp");
                 out.println("<td>"+image.getCreator()+"</td>");
                 out.println("<td>"+image.getStorageDate()+"</td>");
                 out.println("<td>"+image.getCaptureDate()+"</td>");
-                out.println("<td>"+image.getFilename()+"</td>");
-                out.println("<td>");
-                out.println("<form method = 'POST'>");
-                out.println("<input type='hidden' name='id' value='"+image.getId()+"'/>");
-                out.println("<button type='submit' formaction='mostrarImagen'>View</button>");
-                if (user.equals(image.getCreator())) {                                    
-                    out.println("<button type='submit' formaction=''>Modify</button>");
-                    out.println("<button type='submit' formaction=''>Delete</button>");                   
+                out.println("<td>"+image.getFilename()+"</td>"); 
+                byte[] img = SOAPConnection.downloadImage(image.getFilename());
+                String base64Image = Base64.getEncoder().encodeToString(img);
+                out.println("<td><a href='display.jsp?id="+image.getId()+"'><img src='data:image/jpg;base64,"+base64Image+"''width='75' height='50'></a></a></td>");
+                if (user.equals(image.getCreator())) {
+                    out.println("<td><a href='modificarImagen.jsp?id="+image.getId()+"'>Modify</a> / <a href='eliminarImagen.jsp?id="+image.getId()+"'>Delete</a><td>");
                 }
-                out.println("</form>"); 
-                out.println("</td>");
                 out.println("</tr>");
             }          
         %>

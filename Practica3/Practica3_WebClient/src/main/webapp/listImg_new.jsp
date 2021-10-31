@@ -26,7 +26,6 @@ else response.sendRedirect("login.jsp");
         <h1>Listar Imagenes</h1>
         <table class="table">
             <tr>
-                <th>ID</th>
                 <th>Title</th>
                 <th>Description</th>
                 <th>Keywords</th>
@@ -35,7 +34,6 @@ else response.sendRedirect("login.jsp");
                 <th>Storage Date</th>
                 <th>Capture Date</th>
                 <th>Filename</th>
-                <th>Image</th>
                 <th>Action</th>
             </tr>
         <%             
@@ -45,7 +43,6 @@ else response.sendRedirect("login.jsp");
             while(listIterator.hasNext()) {
                 ws.Image image = listIterator.next();
                 out.println("<tr>");
-                out.println("<td>"+image.getId()+"</td>");
                 out.println("<td>"+image.getTitle()+"</td>");
                 out.println("<td>"+image.getDescription()+"</td>");
                 out.println("<td>"+image.getKeywords()+"</td>");
@@ -54,11 +51,16 @@ else response.sendRedirect("login.jsp");
                 out.println("<td>"+image.getStorageDate()+"</td>");
                 out.println("<td>"+image.getCaptureDate()+"</td>");
                 out.println("<td>"+image.getFilename()+"</td>");
-                //out.println("<td><a href='Images/"+image.getFilename()+"'><img src='Images/"+img.filename+"'width='75' height='50'></a></td>");
-                out.println("<td><a href='display.jsp?id="+image.getId()+"'><img src='Images/"+image.getFilename()+"'width='75' height='50'></a></td>");
-                if (user.equals(image.getCreator())) {
-                    out.println("<td><a href='modificarImagen.jsp?id="+image.getId()+"'>Modify</a>/<a href='eliminarImagen.jsp?id="+image.getId()+"'>Delete</a></td>");
-                }    
+                out.println("<td>");
+                out.println("<form method = 'POST'>");
+                out.println("<input type='hidden' name='id' value='"+image.getId()+"'/>");
+                out.println("<button type='submit' formaction='mostrarImagen'>View</button>");
+                if (user.equals(image.getCreator())) {                                    
+                    out.println("<button type='submit' formaction=''>Modify</button>");
+                    out.println("<button type='submit' formaction=''>Delete</button>");                   
+                }
+                out.println("</form>"); 
+                out.println("</td>");
                 out.println("</tr>");
             }          
         %>

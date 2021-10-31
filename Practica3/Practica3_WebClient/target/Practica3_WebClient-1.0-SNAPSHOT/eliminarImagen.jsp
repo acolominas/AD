@@ -4,6 +4,7 @@
     Author     : alumne
 --%>
 
+<%@page import="java.util.Base64"%>
 <%@page import="client.SOAPConnection"%>
 <%@page import="ws.Image"%>
 <%@page contentType="text/html" session="false" pageEncoding="UTF-8"%>
@@ -57,7 +58,9 @@ if (image == null || !user.equals(image.getCreator())){
             out.println("<td><label>"+image.getStorageDate()+"</label></td>");
             out.println("<td><label>"+image.getCaptureDate()+"</label></td>");
             out.println("<td><label>"+image.getFilename()+"</label></td>");
-            out.println("<td><a href='Images/"+image.getFilename()+"'><img src='Images/"+image.getFilename()+"'width='75' height='50'></a></td>");
+            byte[] img = SOAPConnection.downloadImage(image.getFilename());
+            String base64Image = Base64.getEncoder().encodeToString(img);
+            out.println("<td><a href='display.jsp?id="+image.getId()+"'><img src='data:image/jpg;base64,"+base64Image+"''width='75' height='50'></a></a></td>");
             out.println("</tr>");         
         %>
            

@@ -5,6 +5,7 @@
  */
 package ImageManager;
 
+import client.FileUtil;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
@@ -13,6 +14,9 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import client.DisplayImage;
+import java.io.IOException;
+
 
 /**
  *
@@ -46,15 +50,13 @@ public class ImageManagerClient {
         System.out.println("Introduce password: ");        
         String password = sc.nextLine();
         login_correct = SOAPConnection.checkPassword(username,password);
-        if (login_correct) { 
-                System.out.println("Login Correcto!");
+        if (login_correct) {                 
                 user = username;
         }
         else System.out.println("Login incorrecto, vuelva a probar");  
     }
     
-    private static void menuMain(){         
-         
+    private static void menuMain(){            
         System.out.println("=======  MENU =======");
         System.out.println("== Bienvenido "+user+ " ==");
         System.out.println("1 - Registrar Imagen");
@@ -94,33 +96,36 @@ public class ImageManagerClient {
        String keywords = sc.nextLine();
        
        sc = new Scanner(System.in);
-       System.out.println("Introduce nuevo Author");
+       System.out.println("Introduce Author");
        String author = sc.nextLine(); 
        
        sc = new Scanner(System.in);
-       System.out.println("Introduce nueva Capture Date");
+       System.out.println("Introduce Capture Date");
        String capture_date = sc.nextLine(); 
        
        sc = new Scanner(System.in);
-       System.out.println("Introduce filename");
+       System.out.println("Introduce filename (/home/alumne/Descargas/[filename])");
        String filename = sc.nextLine();
        
        if(!description.isEmpty() && !title.isEmpty() && !keywords.isEmpty() && !author.isEmpty() && !capture_date.isEmpty()) {
            
-           Format f = new SimpleDateFormat("yyyy-MM-dd");
-           String storage_date = f.format(new Date());
-           
-           ws.Image image = new ws.Image();
-           image.setTitle(title);
-           image.setDescription(description);
-           image.setAuthor(author);
-           image.setCreator(user);
-           image.setKeywords(keywords);
-           image.setFilename(filename);
-           image.setCaptureDate(capture_date);
-           image.setStorageDate(storage_date);         
-                  
-           if(SOAPConnection.registerImage(image)) System.out.println("Imagen registrada!") ;
+            int id = SOAPConnection.getMaxId();               
+
+            Format f = new SimpleDateFormat("yyyy-MM-dd");
+            String storage_date = f.format(new Date());                
+            
+            String new_filename = String.valueOf(id + 1) + "_" + filename;
+            if(SOAPConnection.uploadImage(filename,new_filename));
+            ws.Image image = new ws.Image();
+            image.setTitle(title);
+            image.setDescription(description);
+            image.setAuthor(author);
+            image.setCreator(user);
+            image.setKeywords(keywords);
+            image.setFilename(new_filename);
+            image.setCaptureDate(capture_date);
+            image.setStorageDate(storage_date);               
+            if(SOAPConnection.registerImage(image)) System.out.println("Imagen registrada!") ;
            
        }
        else System.out.println("Existen campo vacios!");     
@@ -181,6 +186,20 @@ public class ImageManagerClient {
         }
     }
     
+    private static void menuVerImagen() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Introduce Id: ");
+        Integer id = sc.nextInt();
+        ws.Image image = SOAPConnection.searchById(id);
+        if (image == null) {
+            System.out.println("No existe una imagen con ID "+id);
+        }
+        else {            
+            byte[] img = SOAPConnection.downloadImage(image.getFilename());
+            FileUtil.SaveToDisk(img, image.getFilename());
+             DisplayImage abc = new DisplayImage("/tmp/"+image.getFilename());           
+        }
+    }
     private static void menuModificarImagen() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Introduce Id: ");
@@ -220,6 +239,19 @@ public class ImageManagerClient {
        String capture_date = sc.nextLine();
        if(!capture_date.isEmpty()) image.setCaptureDate(capture_date);
        
+       System.out.println("Introduce nuevo Filename ["+image.getFilename()+"] (/home/alumne/Descargas/[filename]))");
+       String filename = sc.nextLine();
+       if(!filename.isEmpty()) {
+           Format f = new SimpleDateFormat("yyyy-MM-dd");
+           String storage_date = f.format(new Date());
+           image.setStorageDate(storage_date);
+           String new_filename = image.getId() + "_" + filename;
+           image.setFilename(new_filename);
+           SOAPConnection.uploadImage(filename, new_filename);
+           if (!image.getFilename().equals(new_filename)) {
+               SOAPConnection.removeImage(image.getFilename());
+           }
+       }       
        SOAPConnection.modifyImage(image);       
     }
     
@@ -228,7 +260,7 @@ public class ImageManagerClient {
         System.out.println("Introduce Id");
         Integer id = sc.nextInt();
         ws.Image image = SOAPConnection.searchById(id);
-        if(image.getCreator().equals(user)) {
+        if(image.getCreator().equals(user)) {            
             if(SOAPConnection.deleteImage(id)) {
                 System.out.println("Imagen Eliminada");
             }
@@ -257,19 +289,23 @@ public class ImageManagerClient {
                 System.out.println("--------------------------------");
             }
             Scanner sc = new Scanner(System.in);
-            System.out.println("1 - Modificar una imagen");
-            System.out.println("2 - Eliminar una imagen");
-            System.out.println("3 - Volver al menu");
+            System.out.println("1 - Ver una imagen");
+            System.out.println("3 - Modificar una imagen");
+            System.out.println("3 - Eliminar una imagen");
+            System.out.println("4 - Volver al menu");
             Integer option = sc.nextInt();
             
             switch(option) {
-                case 1:
-                    menuModificarImagen();
+                case 1: 
+                    menuVerImagen();
                     break;
                 case 2:
+                    menuModificarImagen();
+                    break;
+                case 3:
                     menuEliminarImagen();
                     break;                
-                case 3:
+                case 4:
                 default:
                     menuMain();
                     break;
