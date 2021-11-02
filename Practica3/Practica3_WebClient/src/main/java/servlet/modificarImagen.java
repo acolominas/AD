@@ -8,8 +8,6 @@ package servlet;
 import App.Image;
 import DB.DB;
 import DISK.ImageDisk;*/
-import client.FileUtil;
-import client.SOAPConnection;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.Format;

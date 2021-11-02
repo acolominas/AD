@@ -151,8 +151,12 @@ public class ImageManagerClient {
                 System.out.println("Introduce Id");
                 Integer id = sc_value.nextInt();
                 ws.Image image = SOAPConnection.searchById(id);
-                images.add(image);
-                showImages(images);
+                if (image != null) {
+                    images.add(image);
+                    showImages(images);
+                } else {
+                  System.out.println("ID Incorrecto");  
+                }
                 break;
             case 2:
                 System.out.println("Introduce Title");

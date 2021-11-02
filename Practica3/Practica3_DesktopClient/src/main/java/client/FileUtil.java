@@ -34,6 +34,7 @@ public class FileUtil {
         }
     }
     public static Boolean SaveToDisk(byte[] FileContent,String Filename) {
+        //Guardamos las imagenes en el directorio /tmp
         String Path = "/tmp";
         OutputStream outs = null;        
         File fileSaveDir = new File(Path);

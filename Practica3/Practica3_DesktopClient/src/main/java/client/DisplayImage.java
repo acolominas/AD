@@ -19,6 +19,7 @@ public class DisplayImage {
 
     public DisplayImage(String filename)             
     {
+        //Previamente hemos guardado la imagen en /tmp (FileUtil.java)
         String Dir = "/tmp/";
         try {
             BufferedImage img=ImageIO.read(new File(Dir+filename));
