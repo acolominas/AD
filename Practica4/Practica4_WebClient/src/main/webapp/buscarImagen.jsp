@@ -4,9 +4,8 @@
     Author     : alumne
 --%>
 
-<%@page import="java.util.ListIterator"%>
-<%@page import="java.util.List"%>
-<%@page import="ws.Image"%>
+<%@page import="org.json.JSONObject"%>
+<%@page import="org.json.JSONArray"%>
 <%@page contentType="text/html" session="false" pageEncoding="UTF-8"%>
 <%   
 HttpSession sessionsa = request.getSession(false);
@@ -26,10 +25,10 @@ else response.sendRedirect("login.jsp");
         <div align="center">
         <h1>Buscar Imagen</h1>
         <%
-            List<Image> images = (List<Image>) request.getAttribute("images");
+            JSONObject resp = (JSONObject) request.getAttribute("images");    
             Integer emptysearch = (Integer) request.getAttribute("emptysearch");
             if (emptysearch != null && emptysearch == 1) out.println("La busqueda ha dado 0 resultados");
-            if (images == null || images.isEmpty()) {
+            if (resp == null || (emptysearch != null && emptysearch == 1)) {                
                 out.println("<form action='buscarImagen' method = 'POST'>");
                 out.println("<select name='search_by'>");
                 out.println("<option value='title'>Title</option>");
@@ -40,7 +39,8 @@ else response.sendRedirect("login.jsp");
                 out.println("<input type='text' name='value'/> <br/>");
                 out.println("<input type='submit' value='Search' />");
             }
-            else {               
+            else {   
+                
                 out.println("<table class='table'>");
                 out.println("<tr>");
                 out.println("<th>Title</th>");
@@ -52,28 +52,29 @@ else response.sendRedirect("login.jsp");
                 out.println("<th>Capture Date</th>");
                 out.println("<th>Filename</th>");
                 out.println("<th>Actions</th>");
-                out.println("</tr>");
-
-                ListIterator<Image> listIterator = images.listIterator();
-                while(listIterator.hasNext()) {
-                    Image image = listIterator.next();
+                out.println("</tr>");                
+                
+                JSONArray images = resp.getJSONArray("body");
+                JSONObject image = new JSONObject();
+                for (int i=0; i<images.length(); i++){
+                    image = images.getJSONObject(i);              
                     out.println("<tr>");
-                    out.println("<td>"+image.getTitle()+"</td>");
-                    out.println("<td>"+image.getDescription()+"</td>");
-                    out.println("<td>"+image.getKeywords()+"</td>");
-                    out.println("<td>"+image.getAuthor()+"</td>");
-                    out.println("<td>"+image.getCreator()+"</td>");
-                    out.println("<td>"+image.getStorageDate()+"</td>");
-                    out.println("<td>"+image.getCaptureDate()+"</td>");
-                    out.println("<td>"+image.getFilename()+"</td>");
+                    out.println("<td>"+image.get("title")+"</td>");
+                    out.println("<td>"+image.get("description")+"</td>");
+                    out.println("<td>"+image.get("keywords")+"</td>");
+                    out.println("<td>"+image.get("author")+"</td>");
+                    out.println("<td>"+image.get("creator")+"</td>");
+                    out.println("<td>"+image.get("storage_date")+"</td>");
+                    out.println("<td>"+image.get("capture_date")+"</td>");
+                    out.println("<td>"+image.get("filename")+"</td>");
                     out.println("<td>");
-                    out.println("<a href='display.jsp?id="+image.getId()+"'>View</a>");
-                    if (user.equals(image.getCreator())) {
-                        out.println("/ <a href='modificarImagen.jsp?id="+image.getId()+"'>Modify</a> / <a href='eliminarImagen.jsp?id="+image.getId()+"'>Delete</a>");
+                    out.println("<a href='display.jsp?id="+image.get("id")+"'>View</a>");
+                    if (user.equals(image.get("creator"))) {
+                        out.println("/ <a href='modificarImagen.jsp?id="+image.get("id")+"'>Modify</a> / <a href='eliminarImagen.jsp?id="+image.get("id")+"'>Delete</a>");
                     }
                     out.println("</td>");
                     out.println("</tr>");
-                 }
+                }
                 out.println("</table>");
             }
         %>

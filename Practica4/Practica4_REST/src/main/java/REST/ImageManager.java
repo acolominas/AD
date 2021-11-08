@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.ws.rs.Produces;
@@ -60,13 +61,12 @@ public class ImageManager {
     * @return    
     */
     @Path("login")
-    //@POST
-    @GET
+    @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
     public Response login (
-            @QueryParam("username") String username,
-            @QueryParam("password") String password)
+            @FormParam("username") String username,
+            @FormParam("password") String password)
     {
         Gson gson = new Gson();
         ResponseJSON resp;
@@ -89,13 +89,12 @@ public class ImageManager {
     * @return    
     */
     @Path("createUser")
-    //@POST
-    @GET
+    @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
     public Response createUser (
-            @QueryParam("username") String username,
-            @QueryParam("password") String password)
+            @FormParam("username") String username,
+            @FormParam("password") String password)
     {        
         ResponseJSON resp;
         String ret;
@@ -136,7 +135,7 @@ public class ImageManager {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_HTML)
-    public String registerImage (
+    public Response registerImage (
             @FormParam("title") String title,
             @FormParam("description") String description,
             @FormParam("keywords") String keywords,
@@ -158,8 +157,18 @@ public class ImageManager {
                 storage_date,
                 filename
         );
-        if(DB.CreateImage(image)) return "OK";
-        return "ERROR";
+        
+        ResponseJSON resp;
+        String ret;
+        
+        if(DB.CreateImage(image)){
+            resp = new ResponseJSON("OK","Image registered");  
+            ret = resp.toJSON();
+            return Response.ok(ret,MediaType.APPLICATION_JSON).build();  
+        }
+        resp = new ResponseJSON("ERROR","Image not registered");  
+        ret = resp.toJSON();
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build();
     }
     
     /**    
@@ -178,7 +187,7 @@ public class ImageManager {
     @POST    
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)    
     @Produces(MediaType.TEXT_HTML)    
-    public String modifyImage (
+    public Response modifyImage (
             @FormParam("id") String id,
             @FormParam("title") String title,
             @FormParam("description") String description,
@@ -200,8 +209,18 @@ public class ImageManager {
                 storage_date,
                 filename
         );
-        if(DB.ModifyImage(image)) return "OK";
-        return "ERROR";
+        
+        ResponseJSON resp;
+        String ret;
+        
+        if(DB.ModifyImage(image)) {
+            resp = new ResponseJSON("OK","Image modified");  
+            ret = resp.toJSON();
+            return Response.ok(ret,MediaType.APPLICATION_JSON).build(); 
+        }
+        resp = new ResponseJSON("ERROR","Image not registered");  
+        ret = resp.toJSON();
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build();
     }
     
     /**    
@@ -217,17 +236,25 @@ public class ImageManager {
             @FormParam("id") String id) throws IOException
     {     
         Image img = DB.SearchImageById(String.valueOf(id));
-         if (img != null) {
-             System.out.println("Image existeix");
-             if(ImageDisk.RemoveFromDisk(img.getFilename())) {
-                 System.out.println("Image eliminada1");
-                 if (DB.DeleteImage(img.getId())) {
-                     System.out.println("Image eliminada");                       
-                     return Response.ok("OK",MediaType.APPLICATION_JSON).build();                                          
-                 }
-             }             
-         }
-         return Response.serverError().build();         
+        
+        ResponseJSON resp;
+        String ret;
+        
+        if (img != null) {
+            System.out.println("Image existeix");
+            if(ImageDisk.RemoveFromDisk(img.getFilename())) {
+                System.out.println("Image eliminada1");
+                if (DB.DeleteImage(img.getId())) {
+                    System.out.println("Image eliminada");                       
+                    resp = new ResponseJSON("OK","Image deleted");  
+                    ret = resp.toJSON();
+                    return Response.ok(ret,MediaType.APPLICATION_JSON).build();                                           
+                }
+            }             
+        }
+        resp = new ResponseJSON("ERROR","Image not modified");  
+        ret = resp.toJSON();
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build();          
     }
     
     /**    
@@ -239,10 +266,14 @@ public class ImageManager {
     @Produces(MediaType.APPLICATION_JSON)
     public Response listImages ()
     {
-        List<Image> images = DB.ListImages();
-        Gson gson = new Gson();
-        String json = gson.toJson(images);
-        return Response.ok(json,MediaType.APPLICATION_JSON).build();
+        ResponseJSON resp;
+        String ret;        
+        List<Image> images = DB.ListImages();        
+        resp = new ResponseJSON("OK","Images Listed");  
+        resp.setBody(images);
+        ret = resp.toJSON();
+  
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build();
     }
     
     /**
@@ -256,10 +287,22 @@ public class ImageManager {
     public Response searchByID (
             @PathParam("id") int id)
     {
+               
+        ResponseJSON resp;
+        String ret;
+        
         Image image = DB.SearchImageById(String.valueOf(id));
-        Gson gson = new Gson();
-        String json = gson.toJson(image);
-        return Response.ok(json,MediaType.APPLICATION_JSON).build();
+        if (image == null) {
+            resp = new ResponseJSON("ERROR","Image not found");
+        } 
+        else {
+            resp = new ResponseJSON("OK","Image Listed");            
+        }
+        List<Image> images = new ArrayList<Image>();        
+        images.add(image);         
+        resp.setBody(images);
+        ret = resp.toJSON();  
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build();
     } 
     
     /**
@@ -273,10 +316,20 @@ public class ImageManager {
     public Response searchByTitle (
         @PathParam("title") String title)
     {
+        ResponseJSON resp;
+        String ret;
+        
         List<Image> images = DB.SearchImagesByTitle(title);
-        Gson gson = new Gson();
-        String json = gson.toJson(images);
-        return Response.ok(json,MediaType.APPLICATION_JSON).build();
+        
+        if (images.isEmpty()) {
+            resp = new ResponseJSON("ERROR","Images not found");
+        } 
+        else {
+            resp = new ResponseJSON("OK","Images Listed");            
+        }        
+        resp.setBody(images);
+        ret = resp.toJSON();
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build();
     }
            
     /**
@@ -291,10 +344,20 @@ public class ImageManager {
     public Response searchByCreationDate (
             @PathParam("date") String date)
     {
+        ResponseJSON resp;
+        String ret;
+        
         List<Image> images = DB.SearchImagesByCreaDate(date);
-        Gson gson = new Gson();
-        String json = gson.toJson(images);
-        return Response.ok(json,MediaType.APPLICATION_JSON).build();
+        
+        if (images.isEmpty()) {
+            resp = new ResponseJSON("ERROR","Images not found");
+        } 
+        else {
+            resp = new ResponseJSON("OK","Images Listed");            
+        }        
+        resp.setBody(images);
+        ret = resp.toJSON();
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build(); 
     }
     
     /**    
@@ -308,10 +371,21 @@ public class ImageManager {
     public Response searchByAuthor (
             @PathParam("author") String author)
     {
+        
+        ResponseJSON resp;
+        String ret;
+        
         List<Image> images = DB.SearchImagesByAuthor(author);
-        Gson gson = new Gson();
-        String json = gson.toJson(images);
-        return Response.ok(json,MediaType.APPLICATION_JSON).build();
+        
+        if (images.isEmpty()) {
+            resp = new ResponseJSON("ERROR","Images not found");
+        } 
+        else {
+            resp = new ResponseJSON("OK","Images Listed");            
+        }        
+        resp.setBody(images);
+        ret = resp.toJSON();
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build(); 
     }        
     
     /**
@@ -325,9 +399,19 @@ public class ImageManager {
     public Response searchByKeywords (
             @PathParam("keywords") String keywords)
     {
+        ResponseJSON resp;
+        String ret;
+        
         List<Image> images = DB.SearchImagesByKeyword(keywords);
-        Gson gson = new Gson();
-        String json = gson.toJson(images);
-        return Response.ok(json,MediaType.APPLICATION_JSON).build();
+        
+        if (images.isEmpty()) {
+            resp = new ResponseJSON("ERROR","Images not found");
+        } 
+        else {
+            resp = new ResponseJSON("OK","Images Listed");            
+        }        
+        resp.setBody(images);
+        ret = resp.toJSON();
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build();
     }       
 }

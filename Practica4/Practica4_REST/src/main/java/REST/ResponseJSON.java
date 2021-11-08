@@ -5,7 +5,9 @@
  */
 package REST;
 
+import App.Image;
 import com.google.gson.Gson;
+import java.util.List;
 
 /**
  *
@@ -14,7 +16,7 @@ import com.google.gson.Gson;
 public class ResponseJSON {
     public String status;
     public String message; 
-    public String body;
+    public List<Image> body;
     
     public ResponseJSON(String status, String message){
         this.status = status;
@@ -24,5 +26,9 @@ public class ResponseJSON {
     public String toJSON(){
         Gson gson = new Gson();
         return gson.toJson(this);
+    }
+    
+    public void setBody(List<Image> body){
+        this.body = body;
     }
 }
