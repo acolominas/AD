@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import javax.servlet.http.Part;
 
 /**
@@ -26,6 +27,13 @@ public class FileUtil {
             }
         }
         return null;
+    }
+    
+    public static String getNewFilename(Part part) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String filename = FileUtil.getFilename(part);   
+        filename = String.valueOf(timestamp.getTime()+ "_"+filename); 
+        return filename;
     }
     public static byte[] getFileContent(InputStream inputStream) {
         try {

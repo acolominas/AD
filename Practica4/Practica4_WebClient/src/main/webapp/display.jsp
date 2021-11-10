@@ -4,9 +4,9 @@
     Author     : alumne
 --%>
 
+<%@page import="org.json.JSONObject"%>
 <%@page import="java.util.Base64"%>
-<%@page import="ws.Image"%>
-<%@page import="client.SOAPConnection"%>
+<%@page import="client.RESTConnection"%>
 <%@page contentType="text/html" session = "false" pageEncoding="UTF-8"%>
 <%   
 HttpSession sessionsa = request.getSession(false);
@@ -14,12 +14,7 @@ String user = null;
 if(sessionsa != null && sessionsa.getAttribute("username") != null) user = (String) sessionsa.getAttribute("username");      
 else response.sendRedirect("login.jsp"); 
 
-String id = request.getParameter("id");          
-Image image = SOAPConnection.searchById(Integer.valueOf(id));
-if (image == null){
-     response.sendRedirect("menu.jsp");
-     return;
-}
+String id = request.getParameter("id");
 %>
 <!DOCTYPE html>
 <html>
@@ -30,8 +25,8 @@ if (image == null){
         <title>Display Image</title>
     </head>
     <body>
-            <% byte[] img = SOAPConnection.downloadImage(image.getFilename());
-            String base64Image = Base64.getEncoder().encodeToString(img);            
+            <% JSONObject resp_img = RESTConnection.downloadImage(id);
+            String base64Image = resp_img.get("body").toString();                                            
             out.println("<div align='center'>");
             out.println("<img src='data:image/jpg;base64,"+base64Image+"'/>");
             out.println("</div>");

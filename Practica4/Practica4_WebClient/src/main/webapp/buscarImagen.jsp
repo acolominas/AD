@@ -4,6 +4,7 @@
     Author     : alumne
 --%>
 
+<%@page import="client.RESTConnection"%>
 <%@page import="org.json.JSONObject"%>
 <%@page import="org.json.JSONArray"%>
 <%@page contentType="text/html" session="false" pageEncoding="UTF-8"%>
@@ -51,6 +52,7 @@ else response.sendRedirect("login.jsp");
                 out.println("<th>Storage Date</th>");
                 out.println("<th>Capture Date</th>");
                 out.println("<th>Filename</th>");
+                out.println("<th>Image</th>");
                 out.println("<th>Actions</th>");
                 out.println("</tr>");                
                 
@@ -66,13 +68,14 @@ else response.sendRedirect("login.jsp");
                     out.println("<td>"+image.get("creator")+"</td>");
                     out.println("<td>"+image.get("storage_date")+"</td>");
                     out.println("<td>"+image.get("capture_date")+"</td>");
-                    out.println("<td>"+image.get("filename")+"</td>");
-                    out.println("<td>");
-                    out.println("<a href='display.jsp?id="+image.get("id")+"'>View</a>");
+                    out.println("<td>"+image.get("filename")+"</td>");                    
+                    JSONObject resp_img = RESTConnection.downloadImage(image.get("id").toString());
+                    String base64Image = resp_img.get("body").toString();                
+                    out.println("<td><a href='display.jsp?id="+image.get("id")+"'><img src='data:image/jpg;base64,"+base64Image+"' width='75' height='50'></a></a></td>");
+                    
                     if (user.equals(image.get("creator"))) {
-                        out.println("/ <a href='modificarImagen.jsp?id="+image.get("id")+"'>Modify</a> / <a href='eliminarImagen.jsp?id="+image.get("id")+"'>Delete</a>");
-                    }
-                    out.println("</td>");
+                        out.println("<td><a href='modificarImagen.jsp?id="+image.get("id")+"'>Modify</a> / <a href='eliminarImagen.jsp?id="+image.get("id")+"'>Delete</a></td>");
+                    }                    
                     out.println("</tr>");
                 }
                 out.println("</table>");

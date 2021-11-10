@@ -4,9 +4,9 @@
     Author     : alumne
 --%>
 
+<%@page import="org.json.JSONObject"%>
 <%@page import="java.util.Base64"%>
-<%@page import="client.SOAPConnection"%>
-<%@page import="ws.Image"%>
+<%@page import="client.RESTConnection"%>
 <%@page contentType="text/html" session="false" pageEncoding="UTF-8"%>
 <%   
 HttpSession sessionsa = request.getSession(false);
@@ -17,8 +17,9 @@ else {
     return;
 } 
 String id = request.getParameter("id");           
-Image image = SOAPConnection.searchById(Integer.valueOf(id));
-if (image == null || !user.equals(image.getCreator())){
+JSONObject resp = RESTConnection.searchById(Integer.valueOf(id));
+JSONObject image = resp.getJSONArray("body").getJSONObject(0);
+if (image == null || !user.equals(image.get("creator"))){
      response.sendRedirect("menu.jsp");
 }
 %>
@@ -35,8 +36,7 @@ if (image == null || !user.equals(image.getCreator())){
         <h1>Eliminar Imagen</h1>
         <form action="eliminarImagen" method = "POST">
            <table class="table">
-            <tr>
-                <th>Id</th>
+            <tr>                
                 <th>Title</th>
                 <th>Description</th>
                 <th>Keywords</th>
@@ -48,24 +48,23 @@ if (image == null || !user.equals(image.getCreator())){
                 <th>Image</th>
             </tr>
         <%  
-            out.println("<tr>");
-            out.println("<td><label>"+image.getId()+"</label></td>");            
-            out.println("<td><label>"+image.getTitle()+"</label></td>");
-            out.println("<td><label>"+image.getDescription()+"</label></td>");
-            out.println("<td><label>"+image.getKeywords()+"</label></td>");
-            out.println("<td><label>"+image.getAuthor()+"</label></td>");
-            out.println("<td><label>"+image.getCreator()+"</label></td>");
-            out.println("<td><label>"+image.getStorageDate()+"</label></td>");
-            out.println("<td><label>"+image.getCaptureDate()+"</label></td>");
-            out.println("<td><label>"+image.getFilename()+"</label></td>");
-            byte[] img = SOAPConnection.downloadImage(image.getFilename());
-            String base64Image = Base64.getEncoder().encodeToString(img);
-            out.println("<td><a href='display.jsp?id="+image.getId()+"'><img src='data:image/jpg;base64,"+base64Image+"''width='75' height='50'></a></a></td>");
+            out.println("<tr>");                        
+            out.println("<td><label>"+image.get("title")+"</label></td>");
+            out.println("<td><label>"+image.get("description")+"</label></td>");
+            out.println("<td><label>"+image.get("keywords")+"</label></td>");
+            out.println("<td><label>"+image.get("author")+"</label></td>");
+            out.println("<td><label>"+image.get("creator")+"</label></td>");
+            out.println("<td><label>"+image.get("storage_date")+"</label></td>");
+            out.println("<td><label>"+image.get("capture_date")+"</label></td>");
+            out.println("<td><label>"+image.get("filename")+"</label></td>");
+            //byte[] img = SOAPConnection.downloadImage(image.getFilename());
+            //String base64Image = Base64.getEncoder().encodeToString(img);
+            //out.println("<td><a href='display.jsp?id="+image.get("id")+"'><img src='data:image/jpg;base64,"+base64Image+"''width='75' height='50'></a></a></td>");
             out.println("</tr>");         
         %>
            
            </table>
-            <% out.println("<input type='hidden' name='id' value='"+image.getId()+"'/>"); %>
+            <% out.println("<input type='hidden' name='id' value='"+image.get("id")+"'/>"); %>
            <input type="submit" value="Eliminar" /> 
         </form>
         </div>

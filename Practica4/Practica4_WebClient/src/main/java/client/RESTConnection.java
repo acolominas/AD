@@ -15,8 +15,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.Part;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -198,6 +200,121 @@ public class RESTConnection {
         
         }
         return json;
+    }
+    
+    public static Boolean registerImage(String title,String description,String keywords,String author,String creator,String capture_date,String filename) {
+        try {                                
+            String queryString = String.format("title=%s&description=%s&keywords=%s&author=%s&creator=%s&capture=%s&filename=%s" 
+                ,URLEncoder.encode(title, charset) 
+                ,URLEncoder.encode(description, charset)
+                ,URLEncoder.encode(keywords, charset)  
+                ,URLEncoder.encode(author, charset) 
+                ,URLEncoder.encode(creator, charset) 
+                ,URLEncoder.encode(capture_date, charset)
+                ,URLEncoder.encode(filename, charset)
+            );   
+            
+            String response = doPOSTConnection("/register",queryString);                          
+            JSONObject json = new JSONObject(response);
+            System.out.println(response); 
+            return json.get("status").equals("OK");
+        } catch (IOException | JSONException e){
+            return false;
+        
+        }    
+    }
+    
+    public static Boolean modifyImage(String id,String title,String description,String keywords,String author,String creator,String storage_date,String capture_date,String filename) {
+        try {                                
+            String queryString = String.format("id=%s,title=%s&description=%s&keywords=%s&author=%s&creator=%s&storage=%s&capture=%s&filename=%s" 
+                ,URLEncoder.encode(title, charset) 
+                ,URLEncoder.encode(description, charset)
+                ,URLEncoder.encode(keywords, charset)  
+                ,URLEncoder.encode(author, charset) 
+                ,URLEncoder.encode(creator, charset) 
+                ,URLEncoder.encode(storage_date, charset)  
+                ,URLEncoder.encode(capture_date, charset)
+                ,URLEncoder.encode(filename, charset)
+            );   
+            
+            String response = doPOSTConnection("/modify",queryString);                          
+            JSONObject json = new JSONObject(response);
+            System.out.println(response); 
+            return json.get("status").equals("OK");
+        } catch (IOException | JSONException e){
+            return false;
+        
+        }    
+    }
+    
+    public static JSONObject deleteImage(String id) { 
+        JSONObject json = null;  
+        try {
+            String queryString = String.format("id=%s" 
+                ,URLEncoder.encode(id, charset)                             
+            );
+            String response = doPOSTConnection("/delete",queryString);                                
+            json = new JSONObject(response); 
+            return json;
+        } catch (IOException | JSONException e){
+            return null;
+        
+        }     
+    }
+     
+    
+     public static JSONObject downloadImage(String image_id) {
+        JSONObject json = null;  
+        try {
+            String queryString = String.format("image_id=%s" 
+                ,URLEncoder.encode(image_id, charset)                             
+            );
+            String response = doPOSTConnection("/downloadImage",queryString);                                
+            json = new JSONObject(response); 
+            return json;
+        } catch (IOException | JSONException e){
+            return null;
+        
+        }
+        
+    }
+    
+    public static Boolean uploadImage(Part part,String filename) {
+        JSONObject json = null;  
+        try {
+            
+            InputStream inputStream = part.getInputStream();
+	    byte[] fileContent = FileUtil.getFileContent(inputStream);
+            String base64String = Base64.getEncoder().encodeToString(fileContent);
+            
+            String queryString = String.format("filename=%s&image=%s" 
+                ,URLEncoder.encode(filename, charset)
+                ,URLEncoder.encode(base64String, charset)                             
+            );
+            String response = doPOSTConnection("/uploadImage",queryString);                                        
+            json = new JSONObject(response); 
+            return json.get("status").equals("OK");
+        } catch (IOException | JSONException e){
+            return false;
+        
+        }
+        
+    }
+    
+    public static Boolean removeImage(String filename) {
+        JSONObject json = null;  
+        try {                     
+            String queryString = String.format("filename=%s" 
+                ,URLEncoder.encode(filename, charset)                                           
+            );
+            String response = doPOSTConnection("/removeImage",queryString);                                        
+            json = new JSONObject(response);  
+            return json.get("status").equals("OK");
+        } catch (IOException | JSONException e){
+            return false;
+        
+        }
+        
     }
 }
     

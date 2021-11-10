@@ -16,7 +16,8 @@ import java.util.List;
 public class ResponseJSON {
     public String status;
     public String message; 
-    public List<Image> body;
+    public Object body;
+ 
     
     public ResponseJSON(String status, String message){
         this.status = status;
@@ -28,7 +29,7 @@ public class ResponseJSON {
         return gson.toJson(this);
     }
     
-    public void setBody(List<Image> body){
+    public void setBody(Object body){
         this.body = body;
     }
 }

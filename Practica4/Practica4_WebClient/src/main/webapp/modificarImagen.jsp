@@ -4,8 +4,8 @@
     Author     : alumne
 --%>
 
-<%@page import="client.SOAPConnection"%>
-<%@page import="ws.Image"%>
+<%@page import="org.json.JSONObject"%>
+<%@page import="client.RESTConnection"%>
 <%@page contentType="text/html" session="false" pageEncoding="UTF-8"%>
 <%   
 HttpSession sessionsa = request.getSession(false);
@@ -17,8 +17,9 @@ else {
 } 
 String id = request.getParameter("id");
            
-Image image = SOAPConnection.searchById(Integer.valueOf(id));
-if (image == null || !user.equals(image.getCreator())){
+JSONObject resp = RESTConnection.searchById(Integer.valueOf(id));
+JSONObject image = resp.getJSONArray("body").getJSONObject(0);
+if (image == null || !user.equals(image.get("creator"))){
      response.sendRedirect("menu.jsp");
 }
 %>
@@ -48,18 +49,18 @@ if (image == null || !user.equals(image.getCreator())){
             </tr>
         <%  
             out.println("<tr>");
-            out.println("<input type='hidden' name='id' value='"+image.getId()+"'/>");
-            out.println("<td><input type='text' value='"+image.getTitle()+"' name='title'/></td>");
-            out.println("<td><input type='text' value='"+image.getDescription()+"' name='description'/></td>");
-            out.println("<td><input type='text' value='"+image.getKeywords()+"' name='keywords'/></td>");
-            out.println("<td><input type='text' value='"+image.getAuthor()+"' name='author'/></td>");
-            out.println("<td><label>"+image.getCreator()+"</label></td>");
-            out.println("<input type='hidden' name='creator' value='"+image.getCreator()+"'/>");
-            out.println("<td><label>"+image.getStorageDate()+"</label></td>");
-            out.println("<input type='hidden' name='storage_date' value='"+image.getStorageDate()+"'/>");
-            out.println("<td><input type='date' value='"+image.getCaptureDate()+"' name='capture_date'/></td>");
-            out.println("<td><label>"+image.getFilename()+"</label></td>");
-            out.println("<input type='hidden' name='filename' value='"+image.getFilename()+"'/>");
+            out.println("<input type='hidden' name='id' value='"+image.get("id")+"'/>");
+            out.println("<td><input type='text' value='"+image.get("title")+"' name='title'/></td>");
+            out.println("<td><input type='text' value='"+image.get("description")+"' name='description'/></td>");
+            out.println("<td><input type='text' value='"+image.get("keywords")+"' name='keywords'/></td>");
+            out.println("<td><input type='text' value='"+image.get("author")+"' name='author'/></td>");
+            out.println("<td><label>"+image.get("creator")+"</label></td>");
+            out.println("<input type='hidden' name='creator' value='"+image.get("creator")+"'/>");
+            out.println("<td><label>"+image.get("storage_date")+"</label></td>");
+            out.println("<input type='hidden' name='storage_date' value='"+image.get("storage_date")+"'/>");
+            out.println("<td><input type='date' value='"+image.get("capture_date")+"' name='capture_date'/></td>");
+            out.println("<td><label>"+image.get("filename")+"</label></td>");
+            out.println("<input type='hidden' name='filename' value='"+image.get("filename")+"'/>");
             %>
             <td><input type='file' name='image'/></td>
             </tr>    

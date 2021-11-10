@@ -59,9 +59,9 @@ else response.sendRedirect("login.jsp");
                 out.println("<td>"+image.get("capture_date")+"</td>");
                 out.println("<td>"+image.get("filename")+"</td>"); 
                 
-                //byte[] img = SOAPConnection.downloadImage(image.getFilename());
-                //String base64Image = Base64.getEncoder().encodeToString(img);
-                //out.println("<td><a href='display.jsp?id="+image.getId()+"'><img src='data:image/jpg;base64,"+base64Image+"''width='75' height='50'></a></a></td>");
+                JSONObject resp_img = RESTConnection.downloadImage(image.get("id").toString());
+                String base64Image = resp_img.get("body").toString();                
+                out.println("<td><a href='display.jsp?id="+image.get("id")+"'><img src='data:image/jpg;base64,"+base64Image+"' width='75' height='50'></a></a></td>");
                 if (user.equals(image.get("creator"))) {
                     out.println("<td><a href='modificarImagen.jsp?id="+image.get("id")+"'>Modify</a> / <a href='eliminarImagen.jsp?id="+image.get("id")+"'>Delete</a><td>");
                 }

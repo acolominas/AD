@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import javax.ws.rs.Produces;
@@ -141,11 +142,11 @@ public class ImageManager {
             @FormParam("keywords") String keywords,
             @FormParam("author") String author,
             @FormParam("creator") String creator,
-            @FormParam("capture") String capture_date)
+            @FormParam("capture") String capture_date,
+            @FormParam("filename") String filename)
     {
         Format f = new SimpleDateFormat("yyyy-MM-dd");
-        String storage_date = f.format(new Date()); 
-        String filename= "";
+        String storage_date = f.format(new Date());         
         Image image = new Image(
                 "",
                 title,
@@ -413,5 +414,90 @@ public class ImageManager {
         resp.setBody(images);
         ret = resp.toJSON();
         return Response.ok(ret,MediaType.APPLICATION_JSON).build();
-    }       
+    } 
+    
+    /**
+    * POST method to upload an image to disk
+    * @param filename
+    * @param image        
+    * @return    
+    */    
+    @Path("uploadImage")    
+    @POST        
+    @Produces(MediaType.APPLICATION_JSON)    
+    public Response uploadImage (
+            @FormParam("filename") String filename,
+            @FormParam("image") String image)
+    {
+        ResponseJSON resp;
+        String ret;        
+        byte[] img = Base64.getDecoder().decode(image.getBytes());
+        if(ImageDisk.SaveToDisk(img, filename)){
+            resp = new ResponseJSON("OK","Image uploaded");
+        }
+        else {
+            resp = new ResponseJSON("ERROR","Image not uploaded");
+        }           
+        ret = resp.toJSON();
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build();
+    }
+    
+    /**
+    * POST method to remove an image from disk
+    * @param filename      
+    * @return    
+    */    
+    @Path("removeImage")    
+    @POST        
+    @Produces(MediaType.APPLICATION_JSON)    
+    public Response removeImage (
+            @FormParam("filename") String filename) 
+    {
+        ResponseJSON resp = new ResponseJSON("ERROR","Image not uploaded");
+        String ret;
+        
+        try {
+        
+            if(ImageDisk.RemoveFromDisk(filename)){
+                resp = new ResponseJSON("OK","Image uploaded");
+            }             
+        } catch(IOException e){
+            ret = resp.toJSON();
+            return Response.ok(ret,MediaType.APPLICATION_JSON).build();
+        }
+        ret = resp.toJSON();
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build();
+    }
+    
+    
+    /**
+    * POST method to download an image from disk 
+    * @param image_id      
+    * @return    
+    */    
+    @Path("downloadImage")   
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)    
+    public Response downloadImage (
+            @FormParam("image_id") String image_id) 
+    {
+        ResponseJSON resp = new ResponseJSON("ERROR","Image not downloaded");
+        String ret;
+        
+        try { 
+            Image image = DB.SearchImageById(image_id);
+            String filename = image.getFilename();
+            byte[] img = ImageDisk.GetFromDisk(filename);   
+            String base64String = Base64.getEncoder().encodeToString(img);                        
+            resp = new ResponseJSON("OK","Image downloaded");
+            resp.setBody(base64String);                       
+        } catch(IOException e){
+            ret = resp.toJSON();
+            return Response.ok(ret,MediaType.APPLICATION_JSON).build();
+        }
+        ret = resp.toJSON();
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build();
+    }
+    
+    
 }
