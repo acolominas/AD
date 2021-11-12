@@ -9,33 +9,34 @@ import App.Image;
 import App.User;
 import DB.DB;
 import DISK.ImageDisk;
+import REST.annotation.Secured;
 import com.google.gson.Gson;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * REST Web Service
- * https://compuarticulos.blogspot.com/2018/08/crear-un-simple-rest-api-con-netbeans-y.html
- * https://oracle-max.com/creando-un-api-rest-con-java-y-netbeans-que-devuelva-un-json-en-su-request/
- * http://joseltoro.blogspot.com/2020/05/crear-un-crud-web-service-rest-json-en.html
- * https://stackoverflow.com/questions/21643724/amdatu-multi-part-form-formparam-is-always-null
  *
  * @author alumne
  */
@@ -52,57 +53,50 @@ public class ImageManager {
      * Creates a new instance of ImageManager
      */
     public ImageManager() {
-    }   
+    }      
     
-    
-    /**    
+     /**    
     * POST method to login a user    
-    * @param username    
-    * @param password     
+    * @param user    
     * @return    
     */
     @Path("login")
     @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.TEXT_HTML)
-    public Response login (
-            @FormParam("username") String username,
-            @FormParam("password") String password)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response login(User user)
     {
-        Gson gson = new Gson();
         ResponseJSON resp;
         String ret;
         
-        if(DB.CheckPassword(username, password)) {
+        if(DB.CheckPassword(user.getUsername(), user.getPassword())) {
+            String token = issueToken(user.getUsername());
             resp = new ResponseJSON("OK","Login Correct");
-            ret =  gson.toJson(resp);            
+            resp.body = "Bearer " + token;
+            ret =  resp.toJSON(); 
+                  
             return Response.ok(ret,MediaType.APPLICATION_JSON).build();
         }  
         resp = new ResponseJSON("ERROR","Login Incorrect");
-        ret =  gson.toJson(resp); 
-        return Response.ok(ret,MediaType.APPLICATION_JSON).build(); 
+        ret =  resp.toJSON();
+        return Response.status(Response.Status.UNAUTHORIZED).build();        
     }
     
     /**    
     * POST method to login a user    
-    * @param username    
-    * @param password     
+    * @param user   
     * @return    
     */
     @Path("createUser")
     @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.TEXT_HTML)
-    public Response createUser (
-            @FormParam("username") String username,
-            @FormParam("password") String password)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createUser (User user)
     {        
         ResponseJSON resp;
-        String ret;
-        
-        User user = new User(username,password);
-        
-        if (DB.CheckUser(username)) {
+        String ret;        
+          
+        if (DB.CheckUser(user.getUsername())) {
             resp = new ResponseJSON("ERROR","Duplicated username");  
             ret = resp.toJSON();
             return Response.ok(ret,MediaType.APPLICATION_JSON).build();
@@ -122,42 +116,19 @@ public class ImageManager {
     
     /**    
     * POST method to register a new image    
-    * @param title    
-    * @param description     
-    * @param keywords         
-    * @param author    
-    * @param creator    
-    * @param capture_date         
+    * @param image         
     * @return    
     */
-    //https://stackoverflow.com/questions/21643724/amdatu-multi-part-form-formparam-is-always-null
-    //https://openliberty.io/docs/21.0.0.6/send-receive-multipart-jaxrs.html
     @Path("register")
     @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.TEXT_HTML)
-    public Response registerImage (
-            @FormParam("title") String title,
-            @FormParam("description") String description,
-            @FormParam("keywords") String keywords,
-            @FormParam("author") String author,
-            @FormParam("creator") String creator,
-            @FormParam("capture") String capture_date,
-            @FormParam("filename") String filename)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response registerImage (Image image)
     {
         Format f = new SimpleDateFormat("yyyy-MM-dd");
-        String storage_date = f.format(new Date());         
-        Image image = new Image(
-                "",
-                title,
-                description,
-                keywords,
-                author,
-                creator,
-                capture_date,
-                storage_date,
-                filename
-        );
+        String storage_date = f.format(new Date()); 
+        image.setId("");
+        image.setStorage_date(storage_date);        
         
         ResponseJSON resp;
         String ret;
@@ -174,43 +145,15 @@ public class ImageManager {
     
     /**    
      * POST method to modify an existing image     
-     * @param id
-     * @param title    
-     * @param description     
-     * @param keywords         
-     * @param author    
-     * @param creator        
-     * @param capture_date        
-     * @param storage_date        
+     * @param image      
      * @return    
      */    
-    @Path("modify")    
+    @Path("modify")
     @POST    
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)    
-    @Produces(MediaType.TEXT_HTML)    
-    public Response modifyImage (
-            @FormParam("id") String id,
-            @FormParam("title") String title,
-            @FormParam("description") String description,
-            @FormParam("keywords") String keywords,
-            @FormParam("author") String author,
-            @FormParam("creator") String creator,            
-            @FormParam("capture") String capture_date,
-            @FormParam("storage") String storage_date)
-    {
-        String filename = "";
-        Image image = new Image(
-                id,
-                title,
-                description,
-                keywords,
-                author,
-                creator,
-                capture_date,
-                storage_date,
-                filename
-        );
-        
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)   
+    public Response modifyImage (Image image)
+    {             
         ResponseJSON resp;
         String ret;
         
@@ -226,36 +169,35 @@ public class ImageManager {
     
     /**    
     * POST method to delete an existing image
-    * @param id
+    * @param query 
     * @return 
     */    
     @Path("delete")    
     @POST    
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)    
-    @Produces(MediaType.TEXT_HTML)    
-    public Response deleteImage (
-            @FormParam("id") String id) throws IOException
-    {     
-        Image img = DB.SearchImageById(String.valueOf(id));
-        
-        ResponseJSON resp;
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)   
+    public Response deleteImage (QueryJSON query)
+    {    
+        ResponseJSON resp = new ResponseJSON("ERROR","Image not deleted");
         String ret;
-        
-        if (img != null) {
-            System.out.println("Image existeix");
-            if(ImageDisk.RemoveFromDisk(img.getFilename())) {
-                System.out.println("Image eliminada1");
-                if (DB.DeleteImage(img.getId())) {
-                    System.out.println("Image eliminada");                       
-                    resp = new ResponseJSON("OK","Image deleted");  
-                    ret = resp.toJSON();
-                    return Response.ok(ret,MediaType.APPLICATION_JSON).build();                                           
-                }
-            }             
+        try {
+            String image_id = query.image_id;
+            Image img = DB.SearchImageById(String.valueOf(image_id));            
+            
+            if (img != null) {                
+                if(ImageDisk.RemoveFromDisk(img.getFilename())) {                    
+                    if (DB.DeleteImage(img.getId())) {                                              
+                        resp = new ResponseJSON("OK","Image deleted");                                      
+                    }
+                }             
+            }              
+            
+        }catch (IOException e){
+            ret = resp.toJSON();
+            return Response.ok(ret,MediaType.APPLICATION_JSON).build();
         }
-        resp = new ResponseJSON("ERROR","Image not modified");  
         ret = resp.toJSON();
-        return Response.ok(ret,MediaType.APPLICATION_JSON).build();          
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build();
     }
     
     /**    
@@ -263,6 +205,7 @@ public class ImageManager {
     * @return
     */
     @Path("list")
+    @Secured
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response listImages ()
@@ -271,7 +214,7 @@ public class ImageManager {
         String ret;        
         List<Image> images = DB.ListImages();        
         resp = new ResponseJSON("OK","Images Listed");  
-        resp.setBody(images);
+        resp.body = images;      
         ret = resp.toJSON();
   
         return Response.ok(ret,MediaType.APPLICATION_JSON).build();
@@ -301,7 +244,7 @@ public class ImageManager {
         }
         List<Image> images = new ArrayList<Image>();        
         images.add(image);         
-        resp.setBody(images);
+        resp.body = images;
         ret = resp.toJSON();  
         return Response.ok(ret,MediaType.APPLICATION_JSON).build();
     } 
@@ -328,7 +271,7 @@ public class ImageManager {
         else {
             resp = new ResponseJSON("OK","Images Listed");            
         }        
-        resp.setBody(images);
+        resp.body = images;
         ret = resp.toJSON();
         return Response.ok(ret,MediaType.APPLICATION_JSON).build();
     }
@@ -356,7 +299,7 @@ public class ImageManager {
         else {
             resp = new ResponseJSON("OK","Images Listed");            
         }        
-        resp.setBody(images);
+        resp.body = images;
         ret = resp.toJSON();
         return Response.ok(ret,MediaType.APPLICATION_JSON).build(); 
     }
@@ -384,7 +327,7 @@ public class ImageManager {
         else {
             resp = new ResponseJSON("OK","Images Listed");            
         }        
-        resp.setBody(images);
+        resp.body = images;
         ret = resp.toJSON();
         return Response.ok(ret,MediaType.APPLICATION_JSON).build(); 
     }        
@@ -411,56 +354,54 @@ public class ImageManager {
         else {
             resp = new ResponseJSON("OK","Images Listed");            
         }        
-        resp.setBody(images);
+        resp.body = images;
         ret = resp.toJSON();
         return Response.ok(ret,MediaType.APPLICATION_JSON).build();
     } 
     
     /**
     * POST method to upload an image to disk
-    * @param filename
-    * @param image        
+    * @param query       
     * @return    
     */    
     @Path("uploadImage")    
-    @POST        
+    @POST   
+    @Consumes(MediaType.APPLICATION_JSON)  
     @Produces(MediaType.APPLICATION_JSON)    
-    public Response uploadImage (
-            @FormParam("filename") String filename,
-            @FormParam("image") String image)
+    public Response uploadImage (QueryJSON query)
     {
-        ResponseJSON resp;
-        String ret;        
+        ResponseJSON resp = new ResponseJSON("ERROR","Image not uploaded to disk");
+        String ret;                         
+        String filename = query.filename;
+        String image = query.image;
         byte[] img = Base64.getDecoder().decode(image.getBytes());
         if(ImageDisk.SaveToDisk(img, filename)){
-            resp = new ResponseJSON("OK","Image uploaded");
-        }
-        else {
-            resp = new ResponseJSON("ERROR","Image not uploaded");
-        }           
+            resp = new ResponseJSON("OK","Image uploaded to disk");
+        }              
         ret = resp.toJSON();
         return Response.ok(ret,MediaType.APPLICATION_JSON).build();
     }
     
     /**
-    * POST method to remove an image from disk
-    * @param filename      
+    * POST method to remove an image from disk      
+     * @param query
     * @return    
     */    
     @Path("removeImage")    
-    @POST        
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)  
     @Produces(MediaType.APPLICATION_JSON)    
-    public Response removeImage (
-            @FormParam("filename") String filename) 
-    {
-        ResponseJSON resp = new ResponseJSON("ERROR","Image not uploaded");
-        String ret;
-        
+    public Response removeImage (QueryJSON query)  
+    {     
+        ResponseJSON resp = new ResponseJSON("ERROR","Image not removed from disk");
+        String ret;    
         try {
-        
-            if(ImageDisk.RemoveFromDisk(filename)){
-                resp = new ResponseJSON("OK","Image uploaded");
-            }             
+            String id = query.image_id;
+            Image image = DB.SearchImageById(id);
+            if(ImageDisk.RemoveFromDisk(image.getFilename())){
+                resp = new ResponseJSON("OK","Image removed from disk");
+            }
+                        
         } catch(IOException e){
             ret = resp.toJSON();
             return Response.ok(ret,MediaType.APPLICATION_JSON).build();
@@ -472,32 +413,50 @@ public class ImageManager {
     
     /**
     * POST method to download an image from disk 
-    * @param image_id      
+    * @param query     
     * @return    
     */    
     @Path("downloadImage")   
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)  
     @Produces(MediaType.APPLICATION_JSON)    
-    public Response downloadImage (
-            @FormParam("image_id") String image_id) 
+    public Response downloadImage (QueryJSON query) 
     {
+        //https://www.it-swarm-es.com/es/java/enviar-archivo-dentro-de-jsonobject-rest-servicio-web/1042256445/
         ResponseJSON resp = new ResponseJSON("ERROR","Image not downloaded");
         String ret;
         
-        try { 
-            Image image = DB.SearchImageById(image_id);
+        try {               
+            Image image = DB.SearchImageById(query.image_id);
             String filename = image.getFilename();
             byte[] img = ImageDisk.GetFromDisk(filename);   
             String base64String = Base64.getEncoder().encodeToString(img);                        
             resp = new ResponseJSON("OK","Image downloaded");
-            resp.setBody(base64String);                       
-        } catch(IOException e){
-            ret = resp.toJSON();
+            resp.body = base64String;                                
+        } catch(IOException e){            
+            ret = resp.toJSON();              
             return Response.ok(ret,MediaType.APPLICATION_JSON).build();
         }
         ret = resp.toJSON();
         return Response.ok(ret,MediaType.APPLICATION_JSON).build();
     }
     
-    
+    private String issueToken(String login) {
+    	//Calculamos la fecha de expiración del token
+    	Date issueDate = new Date();
+    	Calendar calendar = Calendar.getInstance();
+    	calendar.setTime(issueDate);
+    	calendar.add(Calendar.MINUTE, 60);
+        Date expireDate = calendar.getTime();
+        
+        //Creamos el token
+        String jwtToken = Jwts.builder()
+                .setSubject(login)
+                .setIssuer("http://localhost:8080/Practica4_REST")
+                .setIssuedAt(issueDate)
+                .setExpiration(expireDate)
+                .signWith(SignatureAlgorithm.HS512, RestSecurityFilter.KEY)
+                .compact();
+        return jwtToken;
+    }      
 }

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpSession;
 import client.RESTConnection;
+import client.User;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,13 +54,17 @@ public class login extends HttpServlet {
             out.println("<h1>Servlet login at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");                      
-            Boolean res;
+            String res;
 
-            if (!username.isEmpty() && !password.isEmpty()) {                
-                res = RESTConnection.checkPassword(username,password);                
-                if (res) {
+            if (!username.isEmpty() && !password.isEmpty()) { 
+                User user = new User();
+                user.username = username;
+                user.password = password;
+                res = RESTConnection.login(user);                               
+                if (res != null) {
                     HttpSession session = request.getSession();
                     session.setAttribute("username", username);
+                    session.setAttribute("token", res);                     
                     response.sendRedirect("menu.jsp");
                 } else {                    
                     request.setAttribute("error_type", "login");

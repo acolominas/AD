@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import client.RESTConnection;
+import client.User;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +47,10 @@ public class crearUsuario extends HttpServlet {
                 response.sendRedirect("login.jsp");
             } else {
                 if (!password_1.isEmpty() && !password_2.isEmpty() && !username.isEmpty() && password_1.equals(password_2)) {
-                    if(RESTConnection.createUser(username,password_1)) { 
+                    User user = new User();
+                    user.username = username;
+                    user.password = password_1;
+                    if(RESTConnection.createUser(user)) { 
                         response.sendRedirect("login.jsp");
                     }else {
                         request.setAttribute("error_type", "crear_usuario");

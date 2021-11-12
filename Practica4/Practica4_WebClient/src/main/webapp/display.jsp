@@ -25,8 +25,10 @@ String id = request.getParameter("id");
         <title>Display Image</title>
     </head>
     <body>
-            <% JSONObject resp_img = RESTConnection.downloadImage(id);
-            String base64Image = resp_img.get("body").toString();                                            
+            <% 
+            JSONObject resp_img = RESTConnection.downloadImage(id);
+            String base64Image = "";
+            if (resp_img.get("status").equals("OK")) base64Image = resp_img.get("body").toString();                                      
             out.println("<div align='center'>");
             out.println("<img src='data:image/jpg;base64,"+base64Image+"'/>");
             out.println("</div>");

@@ -29,6 +29,7 @@ public class ImageManagerConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(REST.ImageManager.class);
+        resources.add(REST.RestSecurityFilter.class);
     }
     
 }

@@ -24,6 +24,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import client.RESTConnection;
 import client.FileUtil;
+import client.Image;
 import java.sql.Timestamp;
 /**
  *
@@ -69,15 +70,28 @@ public class registrarImagen extends HttpServlet {
             }
 
             if (title.isEmpty() || description.isEmpty() || keywords.isEmpty() || author.isEmpty() || capture_date.isEmpty() || part == null) {
-                System.out.println("Failed to register the image");
                 request.setAttribute("error_type", "registrar");
                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                 rd.forward(request, response);
             } else {                                                 
-                String filename = FileUtil.getNewFilename(part);                
+                String filename = FileUtil.getNewFilename(part);                          
                 if (RESTConnection.uploadImage(part,filename)) {
-                    RESTConnection.registerImage(title,description,keywords,author,user,capture_date,filename);                   
-                    response.sendRedirect("menu.jsp");
+                    Image image = new Image();
+                    image.title = title;
+                    image.description = description;
+                    image.keywords = keywords;
+                    image.author = author;
+                    image.creator = user;
+                    image.capture_date = capture_date;
+                    image.filename = filename;
+                    if(RESTConnection.registerImage(image)) {                   
+                        response.sendRedirect("menu.jsp");
+                    }
+                    else {
+                        request.setAttribute("error_type", "registrar");
+                        RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                        rd.forward(request, response);
+                    }
                 }
 
             }

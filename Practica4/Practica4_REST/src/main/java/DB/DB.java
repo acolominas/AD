@@ -134,7 +134,7 @@ public class DB {
                 query = "INSERT INTO usuarios VALUES(?,?)";
                 connection = OpenConnection(connection);
                 statement = connection.prepareStatement(query);    
-                statement.setString(1,user.getId_usuario());
+                statement.setString(1,user.getUsername());
                 statement.setString(2,user.getPassword());
                 statement.executeUpdate();                      
                 CloseConnection(connection);              

@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import client.FileUtil;
+import client.Image;
 import client.RESTConnection;
 
 /**
@@ -87,18 +88,21 @@ public class modificarImagen extends HttpServlet {
                     Format f = new SimpleDateFormat("yyyy-MM-dd");
                     storage_date = f.format(new Date());
                     filename = FileUtil.getNewFilename(part);                    
-                    RESTConnection.uploadImage(part, filename);                  
-                }               
-                RESTConnection.modifyImage(id,title,description,keywords,author,creator,storage_date,capture_date,filename);
-                
-                if (new_image && !old_filename.equals(filename)) {
-                    if(!RESTConnection.removeImage(old_filename)) 
-                    {
-                        request.setAttribute("error_type", "eliminar");
-                        RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-                        rd.forward(request, response);
-                    }
-                }
+                    RESTConnection.uploadImage(part, filename);
+                    RESTConnection.removeImage(id);
+                    
+                }   
+                Image image = new Image();
+                image.id = id;
+                image.title = title;
+                image.description = description;
+                image.keywords = keywords;
+                image.author = author;
+                image.creator = creator;
+                image.storage_date = storage_date;
+                image.capture_date = capture_date;
+                image.filename = filename;           
+                RESTConnection.modifyImage(image);               
 
                 response.sendRedirect("menu.jsp");
 

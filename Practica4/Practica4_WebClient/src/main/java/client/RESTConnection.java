@@ -5,16 +5,15 @@
  */
 package client;
 
+import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,19 +28,21 @@ import org.json.JSONObject;
 public class RESTConnection {
     private static final String url = "http://localhost:8080/Practica4_REST/rest";
     private static final String charset = "UTF-8";
+    private static String token = null;
         
 
     
     //https://stackoverflow.com/questions/2793150/how-to-use-java-net-urlconnection-to-fire-and-handle-http-requests
     //https://dzone.com/articles/how-to-implement-get-and-post-request-through-simp    
-    private static String doPOSTConnection(String path, String query) throws IOException {
+    private static String doPOSTConnection(String path, String query) {
         try {            
            
             HttpURLConnection postConnection = (HttpURLConnection) new URL(url + path).openConnection();           
             postConnection.setRequestMethod("POST");                             
             postConnection.setDoOutput(true); // Triggers POST.
             postConnection.setRequestProperty("Accept-Charset", charset);
-            postConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);        
+            postConnection.setRequestProperty("Content-Type", "application/json;charset=" + charset);
+            postConnection.setRequestProperty("Authorization", token);
             OutputStream output = postConnection.getOutputStream();          
             output.write(query.getBytes(charset));
             output.close();            
@@ -51,10 +52,10 @@ public class RESTConnection {
             StringBuffer response = new StringBuffer();
             while ((inputLine = responseReader.readLine()) != null) {
                 response.append(inputLine);
-            }
+            }            
             responseReader.close();   
             return response.toString();
-        }catch (MalformedURLException e) {
+        }catch (IOException e) {
                 // connection close failed.
                 System.err.println(e.getMessage());
                 System.out.println("oks");
@@ -67,7 +68,8 @@ public class RESTConnection {
     private static String doGETConnection(String path){
         try {
             HttpURLConnection getConnection = (HttpURLConnection) new URL(url + path).openConnection();           
-            getConnection.setRequestMethod("GET");                             
+            getConnection.setRequestMethod("GET"); 
+            getConnection.setRequestProperty("Authorization", token);
                     
             int responseCode = getConnection.getResponseCode();  
             
@@ -99,50 +101,49 @@ public class RESTConnection {
             Logger.getLogger(RESTConnection.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }             
+    } 
+    
+    public static void setToken(String new_token) {
+        token = new_token;
     }
     
-    
-    public static Boolean checkPassword(String username, String password) {            
-        try {
-            String queryString = String.format("username=%s&password=%s" 
-                ,URLEncoder.encode(username, charset) 
-                ,URLEncoder.encode(password, charset)            
-            );
-        
-            String response = doPOSTConnection("/login",queryString);                     
+    //return token
+    public static String login(User user) {            
+        try {          
+            String response = doPOSTConnection("/login",user.toJSON());                     
             JSONObject json = new JSONObject(response);
-            System.out.println(response); 
-            return json.get("status").equals("OK");
-        } catch (IOException | JSONException e){
-            return false;
+            String new_token = json.get("body").toString();
+            System.out.println(response);
+            if (json.get("status").equals("OK")) {
+                return new_token;
+            }
+            else return null;
+        } catch (JSONException e){
+            System.out.println("Peta"); 
+            return null;
         
         }                  
     }
     
-    public static Boolean createUser(String username, String password) {                    
-        try {                                
-            String queryString = String.format("username=%s&password=%s" 
-                ,URLEncoder.encode(username, charset) 
-                ,URLEncoder.encode(password, charset)            
-            );
-
-            String response = doPOSTConnection("/createUser",queryString);                          
+    public static Boolean createUser(User user) {                    
+        try {                          
+            String response = doPOSTConnection("/createUser",user.toJSON());                          
             JSONObject json = new JSONObject(response);
             System.out.println(response); 
             return json.get("status").equals("OK");
-        } catch (IOException | JSONException e){
+        } catch (JSONException e){
             return false;
         
         }                    
     }
     
-    public static JSONObject listImages() {                                                           
+    public static JSONObject listImages() {   
         String response = doGETConnection("/list"); 
         JSONObject json = null;
         try {
             json = new JSONObject(response); 
         } catch (JSONException e){
-        
+            
         }
         return json;
     }
@@ -202,77 +203,54 @@ public class RESTConnection {
         return json;
     }
     
-    public static Boolean registerImage(String title,String description,String keywords,String author,String creator,String capture_date,String filename) {
-        try {                                
-            String queryString = String.format("title=%s&description=%s&keywords=%s&author=%s&creator=%s&capture=%s&filename=%s" 
-                ,URLEncoder.encode(title, charset) 
-                ,URLEncoder.encode(description, charset)
-                ,URLEncoder.encode(keywords, charset)  
-                ,URLEncoder.encode(author, charset) 
-                ,URLEncoder.encode(creator, charset) 
-                ,URLEncoder.encode(capture_date, charset)
-                ,URLEncoder.encode(filename, charset)
-            );   
-            
-            String response = doPOSTConnection("/register",queryString);                          
+    public static Boolean registerImage(Image image) {
+        try {                               
+            String response = doPOSTConnection("/register",image.toJSON());                          
             JSONObject json = new JSONObject(response);
             System.out.println(response); 
             return json.get("status").equals("OK");
-        } catch (IOException | JSONException e){
+        } catch (JSONException e){
             return false;
         
         }    
     }
     
-    public static Boolean modifyImage(String id,String title,String description,String keywords,String author,String creator,String storage_date,String capture_date,String filename) {
-        try {                                
-            String queryString = String.format("id=%s,title=%s&description=%s&keywords=%s&author=%s&creator=%s&storage=%s&capture=%s&filename=%s" 
-                ,URLEncoder.encode(title, charset) 
-                ,URLEncoder.encode(description, charset)
-                ,URLEncoder.encode(keywords, charset)  
-                ,URLEncoder.encode(author, charset) 
-                ,URLEncoder.encode(creator, charset) 
-                ,URLEncoder.encode(storage_date, charset)  
-                ,URLEncoder.encode(capture_date, charset)
-                ,URLEncoder.encode(filename, charset)
-            );   
-            
-            String response = doPOSTConnection("/modify",queryString);                          
+    public static Boolean modifyImage(Image image) {
+        try {                             
+            String response = doPOSTConnection("/modify",image.toJSON());                          
             JSONObject json = new JSONObject(response);
             System.out.println(response); 
             return json.get("status").equals("OK");
-        } catch (IOException | JSONException e){
+        } catch (JSONException e){
             return false;
         
         }    
     }
     
-    public static JSONObject deleteImage(String id) { 
+    public static JSONObject deleteImage(String image_id) { 
         JSONObject json = null;  
+        JSONObject json_query = new JSONObject();
         try {
-            String queryString = String.format("id=%s" 
-                ,URLEncoder.encode(id, charset)                             
-            );
-            String response = doPOSTConnection("/delete",queryString);                                
+            json_query.put("image_id", image_id);            
+            String response = doPOSTConnection("/delete",json_query.toString());                                
             json = new JSONObject(response); 
             return json;
-        } catch (IOException | JSONException e){
+        } catch (JSONException e){
             return null;
         
         }     
     }
      
     
-     public static JSONObject downloadImage(String image_id) {
+    public static JSONObject downloadImage(String image_id) {
         JSONObject json = null;  
+        JSONObject json_query = new JSONObject();
         try {
-            String queryString = String.format("image_id=%s" 
-                ,URLEncoder.encode(image_id, charset)                             
-            );
-            String response = doPOSTConnection("/downloadImage",queryString);                                
+            json_query.put("image_id", image_id);
+            String response = doPOSTConnection("/downloadImage",json_query.toString());                                
             json = new JSONObject(response); 
             return json;
-        } catch (IOException | JSONException e){
+        } catch (JSONException e){
             return null;
         
         }
@@ -280,18 +258,17 @@ public class RESTConnection {
     }
     
     public static Boolean uploadImage(Part part,String filename) {
-        JSONObject json = null;  
+        JSONObject json = null;
+        JSONObject json_query = new JSONObject();
         try {
             
             InputStream inputStream = part.getInputStream();
 	    byte[] fileContent = FileUtil.getFileContent(inputStream);
             String base64String = Base64.getEncoder().encodeToString(fileContent);
+            json_query.put("filename", filename);
+            json_query.put("image", base64String);            
             
-            String queryString = String.format("filename=%s&image=%s" 
-                ,URLEncoder.encode(filename, charset)
-                ,URLEncoder.encode(base64String, charset)                             
-            );
-            String response = doPOSTConnection("/uploadImage",queryString);                                        
+            String response = doPOSTConnection("/uploadImage",json_query.toString());                                        
             json = new JSONObject(response); 
             return json.get("status").equals("OK");
         } catch (IOException | JSONException e){
@@ -301,16 +278,17 @@ public class RESTConnection {
         
     }
     
-    public static Boolean removeImage(String filename) {
+    public static Boolean removeImage(String id) {
         JSONObject json = null;  
+        JSONObject json_query = new JSONObject();
         try {                     
-            String queryString = String.format("filename=%s" 
-                ,URLEncoder.encode(filename, charset)                                           
-            );
-            String response = doPOSTConnection("/removeImage",queryString);                                        
+            
+            json_query.put("image_id", id);
+            
+            String response = doPOSTConnection("/removeImage",json_query.toString());                                        
             json = new JSONObject(response);  
             return json.get("status").equals("OK");
-        } catch (IOException | JSONException e){
+        } catch (JSONException e){
             return false;
         
         }

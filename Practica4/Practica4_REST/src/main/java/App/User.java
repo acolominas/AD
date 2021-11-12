@@ -10,15 +10,15 @@ package App;
  * @author alumne
  */
 public class User {
-    private String id_usuario;
+    private String username;
     private String password; 
 
-    public String getId_usuario() {
-        return id_usuario;
+    public String getUsername() {
+        return username;
     }
 
-    public void setId_usuario(String id_usuario) {
-        this.id_usuario = id_usuario;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
@@ -29,8 +29,8 @@ public class User {
         this.password = password;
     }   
       
-    public User(String id_usuario, String password) {
-        this.id_usuario = id_usuario;
+    public User(String username, String password) {
+        this.username = username;
         this.password = password;
     }
     

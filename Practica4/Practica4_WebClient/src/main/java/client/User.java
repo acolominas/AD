@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package REST;
+package client;
 
 import com.google.gson.Gson;
 
@@ -11,19 +11,12 @@ import com.google.gson.Gson;
  *
  * @author alumne
  */
-public class ResponseJSON {
-    public String status;
-    public String message; 
-    public Object body;
- 
+public class User {
+    public String username;
+    public String password; 
     
-    public ResponseJSON(String status, String message){
-        this.status = status;
-        this.message = message;
-    }
-    
-    public String toJSON(){
+     public String toJSON(){
         Gson gson = new Gson();
         return gson.toJson(this);
-    }    
+    }   
 }
