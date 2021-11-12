@@ -51,6 +51,8 @@ public class modificarImagen extends HttpServlet {
             String user = null;
             if (sessionsa != null && sessionsa.getAttribute("username") != null) {
                 user = (String) sessionsa.getAttribute("username");
+                String token = (String) sessionsa.getAttribute("token");
+                RESTConnection.setToken(token);
             } else {
                 response.sendRedirect("login.jsp");
                 return;
@@ -71,7 +73,6 @@ public class modificarImagen extends HttpServlet {
             String filename = request.getParameter("filename");
             String author = request.getParameter("author");
             Part part = request.getPart("image");
-            String old_filename = filename;
 
             if (title == null || description == null || keywords == null || capture_date == null || storage_date == null) {
                 response.sendRedirect("login.jsp");

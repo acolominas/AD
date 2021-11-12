@@ -5,14 +5,8 @@
  */
 package servlet;
 
-//import App.Image;
-//import DB.DB;
-//import DISK.ImageDisk;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -25,7 +19,6 @@ import javax.servlet.http.Part;
 import client.RESTConnection;
 import client.FileUtil;
 import client.Image;
-import java.sql.Timestamp;
 /**
  *
  * @author alumne
@@ -52,6 +45,8 @@ public class registrarImagen extends HttpServlet {
             String user = null;
             if (sessionsa != null && sessionsa.getAttribute("username") != null) {
                 user = (String) sessionsa.getAttribute("username");
+                String token = (String) sessionsa.getAttribute("token");
+                RESTConnection.setToken(token);
             } else {
                 response.sendRedirect("login.jsp");
                 return;

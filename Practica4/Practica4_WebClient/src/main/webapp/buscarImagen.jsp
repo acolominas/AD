@@ -26,7 +26,9 @@ else response.sendRedirect("login.jsp");
         <div align="center">
         <h1>Buscar Imagen</h1>
         <%
-            JSONObject resp = (JSONObject) request.getAttribute("images");    
+            String token = (String) sessionsa.getAttribute("token");
+            RESTConnection.setToken(token);
+            JSONObject resp = (JSONObject) request.getAttribute("images");
             Integer emptysearch = (Integer) request.getAttribute("emptysearch");
             if (emptysearch != null && emptysearch == 1) out.println("La busqueda ha dado 0 resultados");
             if (resp == null || (emptysearch != null && emptysearch == 1)) {                

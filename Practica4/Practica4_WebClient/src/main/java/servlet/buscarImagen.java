@@ -7,7 +7,6 @@ package servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import client.RESTConnection;
-import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONException;
@@ -57,7 +55,9 @@ public class buscarImagen extends HttpServlet {
                 return;
             }
             if (!value.isEmpty()) { 
-                JSONObject resp = null; 
+                JSONObject resp = null;
+                String token = (String) sessionsa.getAttribute("token");
+                RESTConnection.setToken(token);
                 if (search_by.equals("title")) {
                     resp = RESTConnection.searchByTitle(value);
                 } else if (search_by.equals("author")) {

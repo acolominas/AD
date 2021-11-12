@@ -26,6 +26,8 @@ String id = request.getParameter("id");
     </head>
     <body>
             <% 
+            String token = (String) sessionsa.getAttribute("token");
+            RESTConnection.setToken(token);
             JSONObject resp_img = RESTConnection.downloadImage(id);
             String base64Image = "";
             if (resp_img.get("status").equals("OK")) base64Image = resp_img.get("body").toString();                                      

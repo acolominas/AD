@@ -47,6 +47,8 @@ public class eliminarImagen extends HttpServlet {
             String user = null;
             if (sessionsa != null && sessionsa.getAttribute("username") != null) {
                 user = (String) sessionsa.getAttribute("username");
+                String token = (String) sessionsa.getAttribute("token");
+                RESTConnection.setToken(token);
             } else {
                 response.sendRedirect("login.jsp");
                 return;

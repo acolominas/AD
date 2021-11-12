@@ -16,7 +16,8 @@ else {
     return;
 } 
 String id = request.getParameter("id");
-           
+String token = (String) sessionsa.getAttribute("token");
+RESTConnection.setToken(token);          
 JSONObject resp = RESTConnection.searchById(Integer.valueOf(id));
 JSONObject image = resp.getJSONArray("body").getJSONObject(0);
 if (image == null || !user.equals(image.get("creator"))){

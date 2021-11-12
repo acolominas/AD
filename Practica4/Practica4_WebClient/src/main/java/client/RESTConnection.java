@@ -30,10 +30,7 @@ public class RESTConnection {
     private static final String charset = "UTF-8";
     private static String token = null;
         
-
-    
-    //https://stackoverflow.com/questions/2793150/how-to-use-java-net-urlconnection-to-fire-and-handle-http-requests
-    //https://dzone.com/articles/how-to-implement-get-and-post-request-through-simp    
+  
     private static String doPOSTConnection(String path, String query) {
         try {            
            

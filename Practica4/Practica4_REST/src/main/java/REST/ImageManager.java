@@ -5,12 +5,12 @@
  */
 package REST;
 
+import REST.Security.RestSecurityFilter;
 import App.Image;
 import App.User;
 import DB.DB;
 import DISK.ImageDisk;
-import REST.annotation.Secured;
-import com.google.gson.Gson;
+import REST.Security.Secured;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.IOException;
@@ -28,12 +28,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * REST Web Service
@@ -120,6 +117,7 @@ public class ImageManager {
     * @return    
     */
     @Path("register")
+    @Secured
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -149,6 +147,7 @@ public class ImageManager {
      * @return    
      */    
     @Path("modify")
+    @Secured
     @POST    
     @Consumes(MediaType.APPLICATION_JSON)    
     @Produces(MediaType.APPLICATION_JSON)   
@@ -172,7 +171,8 @@ public class ImageManager {
     * @param query 
     * @return 
     */    
-    @Path("delete")    
+    @Path("delete")
+    @Secured    
     @POST    
     @Consumes(MediaType.APPLICATION_JSON)    
     @Produces(MediaType.APPLICATION_JSON)   
@@ -226,6 +226,7 @@ public class ImageManager {
     * @return
     */
     @Path("searchID/{id}")
+    @Secured
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchByID (
@@ -255,6 +256,7 @@ public class ImageManager {
     * @return
     */
     @Path("searchTitle/{title}")
+    @Secured
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchByTitle (
@@ -283,6 +285,7 @@ public class ImageManager {
     * @return
     */
     @Path("searchCreationDate/{date}")
+    @Secured
     @GET
     @Produces(MediaType.APPLICATION_JSON)    
     public Response searchByCreationDate (
@@ -309,7 +312,8 @@ public class ImageManager {
     * @param author         
     * @return    
     */    
-    @Path("searchAuthor/{author}")    
+    @Path("searchAuthor/{author}")
+    @Secured    
     @GET        
     @Produces(MediaType.APPLICATION_JSON)    
     public Response searchByAuthor (
@@ -337,7 +341,8 @@ public class ImageManager {
     * @param keywords        
     * @return    
     */    
-    @Path("searchKeywords/{keywords}")    
+    @Path("searchKeywords/{keywords}") 
+    @Secured
     @GET        
     @Produces(MediaType.APPLICATION_JSON)    
     public Response searchByKeywords (
@@ -364,7 +369,8 @@ public class ImageManager {
     * @param query       
     * @return    
     */    
-    @Path("uploadImage")    
+    @Path("uploadImage")
+    @Secured
     @POST   
     @Consumes(MediaType.APPLICATION_JSON)  
     @Produces(MediaType.APPLICATION_JSON)    
@@ -387,7 +393,8 @@ public class ImageManager {
      * @param query
     * @return    
     */    
-    @Path("removeImage")    
+    @Path("removeImage")
+    @Secured
     @POST
     @Consumes(MediaType.APPLICATION_JSON)  
     @Produces(MediaType.APPLICATION_JSON)    
@@ -416,13 +423,13 @@ public class ImageManager {
     * @param query     
     * @return    
     */    
-    @Path("downloadImage")   
+    @Path("downloadImage")
+    @Secured
     @POST
     @Consumes(MediaType.APPLICATION_JSON)  
     @Produces(MediaType.APPLICATION_JSON)    
     public Response downloadImage (QueryJSON query) 
     {
-        //https://www.it-swarm-es.com/es/java/enviar-archivo-dentro-de-jsonobject-rest-servicio-web/1042256445/
         ResponseJSON resp = new ResponseJSON("ERROR","Image not downloaded");
         String ret;
         
@@ -442,7 +449,7 @@ public class ImageManager {
     }
     
     private String issueToken(String login) {
-    	//Calculamos la fecha de expiración del token
+    	//Calculamos la fecha de expiración del token (1 hora de sesion)
     	Date issueDate = new Date();
     	Calendar calendar = Calendar.getInstance();
     	calendar.setTime(issueDate);
