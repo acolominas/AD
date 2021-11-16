@@ -18,7 +18,7 @@ import javax.servlet.http.Part;
  * @author alumne
  */
 public class ImageDisk {
-    static final private String Path = "/home/alumne/Escritorio/Practica3/Practica3_SOAP/src/main/webapp/Images";
+    static final private String Path = "/home/alumne/Escritorio/AD/Practica3/Practica3_SOAP/src/main/webapp/Images";
     
  
     public static String getFileName(final Part part) {
