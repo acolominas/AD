@@ -145,6 +145,24 @@ public class RESTConnection {
         return json;
     }
     
+       public static JSONObject searchImages(String title, String  description, String  keywords, String author, String creator, String capture_date, String storage_date) {                                                          
+        String response = doGETConnection("/searchImages/");
+        response = response + '/' + title;
+        response = response + '/' + description;
+        response = response + '/' + keywords;
+        response = response + '/' + author;
+        response = response + '/' + creator;
+        response = response + '/' + capture_date;
+        response = response + '/' + storage_date;
+        JSONObject json = null;
+        try {
+            json = new JSONObject(response); 
+        } catch (JSONException e){
+        
+        }
+        return json;
+    }
+    
     public static JSONObject searchById(int id) {                                                          
         String response = doGETConnection("/searchID/"+String.valueOf(id)); 
         JSONObject json = null;
@@ -226,10 +244,10 @@ public class RESTConnection {
     
     public static JSONObject deleteImage(String image_id) { 
         JSONObject json = null;  
-        JSONObject json_query = new JSONObject();
+        QueryJSON query = new QueryJSON();
         try {
-            json_query.put("image_id", image_id);            
-            String response = doPOSTConnection("/delete",json_query.toString());                                
+            query.image_id = image_id;            
+            String response = doPOSTConnection("/delete",query.toJSON());                                
             json = new JSONObject(response); 
             return json;
         } catch (JSONException e){
@@ -241,10 +259,10 @@ public class RESTConnection {
     
     public static JSONObject downloadImage(String image_id) {
         JSONObject json = null;  
-        JSONObject json_query = new JSONObject();
+        QueryJSON query = new QueryJSON();
         try {
-            json_query.put("image_id", image_id);
-            String response = doPOSTConnection("/downloadImage",json_query.toString());                                
+            query.image_id = image_id; 
+            String response = doPOSTConnection("/downloadImage",query.toJSON());                                
             json = new JSONObject(response); 
             return json;
         } catch (JSONException e){
@@ -256,16 +274,16 @@ public class RESTConnection {
     
     public static Boolean uploadImage(Part part,String filename) {
         JSONObject json = null;
-        JSONObject json_query = new JSONObject();
+        QueryJSON query = new QueryJSON();
         try {
             
             InputStream inputStream = part.getInputStream();
 	    byte[] fileContent = FileUtil.getFileContent(inputStream);
             String base64String = Base64.getEncoder().encodeToString(fileContent);
-            json_query.put("filename", filename);
-            json_query.put("image", base64String);            
+            query.filename = filename;
+            query.image = base64String;            
             
-            String response = doPOSTConnection("/uploadImage",json_query.toString());                                        
+            String response = doPOSTConnection("/uploadImage",query.toJSON());                                        
             json = new JSONObject(response); 
             return json.get("status").equals("OK");
         } catch (IOException | JSONException e){
@@ -277,12 +295,12 @@ public class RESTConnection {
     
     public static Boolean removeImage(String id) {
         JSONObject json = null;  
-        JSONObject json_query = new JSONObject();
+        QueryJSON query = new QueryJSON();
         try {                     
             
-            json_query.put("image_id", id);
+            query.image_id = id;
             
-            String response = doPOSTConnection("/removeImage",json_query.toString());                                        
+            String response = doPOSTConnection("/removeImage",query.toJSON());                                        
             json = new JSONObject(response);  
             return json.get("status").equals("OK");
         } catch (JSONException e){

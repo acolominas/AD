@@ -220,6 +220,57 @@ public class DB {
             return null;
         }
         
+        public static List<Image> SearchImages(String title, String  description, String  keywords, String author, String creator, String capture_date, String storage_date) { 
+            String query;
+            PreparedStatement statement;
+            Connection connection = null;
+            List<Image> images = new ArrayList<Image>();
+            try {
+                query = "SELECT * FROM image WHERE";
+                if(!title.isEmpty()) query = query + " title LIKE  ? AND";
+                if(!description.isEmpty()) query = query + " description LIKE  ? AND";
+                if(!keywords.isEmpty()) query = query + " keywords LIKE  ? AND";
+                if(!author.isEmpty()) query = query + " author LIKE  ? AND";
+                if(!creator.isEmpty()) query = query + " creator LIKE  ? AND";
+                if(!capture_date.isEmpty()) query = query + " capture_date LIKE  ? AND";
+                if(!storage_date.isEmpty()) query = query + " storage_date LIKE  ? AND";
+                connection = OpenConnection(connection);
+                statement = connection.prepareStatement(query.substring(0,query.length()-4));
+                int i = 1;
+                if(!title.isEmpty()) statement.setString(i++, "%" +title+ "%");
+                if(!description.isEmpty()) statement.setString(i++, "%" +description+ "%");
+                if(!keywords.isEmpty()) statement.setString(i++, "%" +keywords+ "%");
+                if(!author.isEmpty()) statement.setString(i++, "%" +author+ "%");
+                if(!creator.isEmpty()) statement.setString(i++, "%" +creator+ "%");
+                if(!capture_date.isEmpty()) statement.setString(i++, "%" +capture_date+ "%");
+                if(!storage_date.isEmpty()) statement.setString(i++, "%" +storage_date+ "%");
+                ResultSet rs = statement.executeQuery();      
+                           
+                while(rs.next()) {
+                    Image img = new Image(
+                            rs.getString("id"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getString("keywords"),
+                            rs.getString("author"),
+                            rs.getString("creator"),
+                            rs.getString("capture_date"),
+                            rs.getString("storage_date"),
+                            rs.getString("filename")
+                    );                      
+                    images.add(img);
+                }                
+                CloseConnection(connection);  
+                return images;
+                
+            } catch (SQLException e) {
+                // connection close failed.
+                System.err.println(e.getMessage());
+                CloseConnection(connection);
+            }
+            return null;
+        }
+        
         public static List<Image> SearchImagesByAuthor(String author) {
             String query;
             PreparedStatement statement;

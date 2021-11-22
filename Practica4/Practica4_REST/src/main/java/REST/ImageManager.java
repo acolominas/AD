@@ -220,6 +220,46 @@ public class ImageManager {
         return Response.ok(ret,MediaType.APPLICATION_JSON).build();
     }
     
+     /**
+    * GET method to search images by id    
+    * @param title
+    * @param description
+    * @param keywords
+    * @param author
+    * @param creator
+    * @param capture_date
+    * @param storage_date
+    * @return
+    */
+    @Path("searchImages/{title}/{description}/{keywords}/{author}/{creator}/{capture_date}/{storage_date}")
+    @Secured
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchImages (
+        @PathParam("title") String title,
+        @PathParam("desccription") String description,
+        @PathParam("keywords") String keywords,
+        @PathParam("author") String author,
+        @PathParam("creator") String creator,
+        @PathParam("capture_date") String capture_date,
+        @PathParam("storage_date") String storage_date)
+    {
+        ResponseJSON resp;
+        String ret;
+        
+        List<Image> images = DB.SearchImages(title, description, keywords, author, creator, capture_date, storage_date);
+        
+        if (images.isEmpty()) {
+            resp = new ResponseJSON("ERROR","Images not found");
+        } 
+        else {
+            resp = new ResponseJSON("OK","Images Listed");            
+        }        
+        resp.body = images;
+        ret = resp.toJSON();
+        return Response.ok(ret,MediaType.APPLICATION_JSON).build();
+    }
+    
     /**
     * GET method to search images by id    
     * @param id
