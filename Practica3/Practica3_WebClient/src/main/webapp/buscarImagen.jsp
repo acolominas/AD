@@ -4,6 +4,8 @@
     Author     : alumne
 --%>
 
+<%@page import="java.util.Base64"%>
+<%@page import="client.SOAPConnection"%>
 <%@page import="java.util.ListIterator"%>
 <%@page import="java.util.List"%>
 <%@page import="ws.Image"%>
@@ -51,6 +53,7 @@ else response.sendRedirect("login.jsp");
                 out.println("<th>Storage Date</th>");
                 out.println("<th>Capture Date</th>");
                 out.println("<th>Filename</th>");
+                out.println("<th>Image</th>");
                 out.println("<th>Actions</th>");
                 out.println("</tr>");
 
@@ -66,12 +69,12 @@ else response.sendRedirect("login.jsp");
                     out.println("<td>"+image.getStorageDate()+"</td>");
                     out.println("<td>"+image.getCaptureDate()+"</td>");
                     out.println("<td>"+image.getFilename()+"</td>");
-                    out.println("<td>");
-                    out.println("<a href='display.jsp?id="+image.getId()+"'>View</a>");
+                    byte[] img = SOAPConnection.downloadImage(image.getFilename());
+                    String base64Image = Base64.getEncoder().encodeToString(img);
+                    out.println("<td><a href='display.jsp?id="+image.getId()+"'><img src='data:image/jpg;base64,"+base64Image+"''width='75' height='50'></a></a></td>");
                     if (user.equals(image.getCreator())) {
-                        out.println("/ <a href='modificarImagen.jsp?id="+image.getId()+"'>Modify</a> / <a href='eliminarImagen.jsp?id="+image.getId()+"'>Delete</a>");
+                        out.println("<td><a href='modificarImagen.jsp?id="+image.getId()+"'>Modify</a> / <a href='eliminarImagen.jsp?id="+image.getId()+"'>Delete</a></td>");
                     }
-                    out.println("</td>");
                     out.println("</tr>");
                  }
                 out.println("</table>");
