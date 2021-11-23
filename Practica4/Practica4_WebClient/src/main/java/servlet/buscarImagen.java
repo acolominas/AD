@@ -5,6 +5,7 @@
  */
 package servlet;
 
+import client.Image;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
@@ -46,33 +47,34 @@ public class buscarImagen extends HttpServlet {
             if (sessionsa == null || sessionsa.getAttribute("username") == null) {
                 response.sendRedirect("login.jsp");
                 return;
-            }
+            }          
+            
+            JSONObject resp = null;
+            String token = (String) sessionsa.getAttribute("token");
+            RESTConnection.setToken(token);
 
-            String search_by = request.getParameter("search_by");
-            String value = request.getParameter("value");
-            if (search_by == null || value == null) {
-                response.sendRedirect("menu.jsp");
-                return;
+            Image image = new Image();
+            image.title = request.getParameter("title");
+            image.description = request.getParameter("description");
+            image.keywords = request.getParameter("keywords");
+            image.author = request.getParameter("author");
+            image.creator = request.getParameter("creator");
+            image.capture_date = request.getParameter("capture_date");
+            image.storage_date = request.getParameter("storage_date");;
+
+            if(image.title == null || image.description == null || image.keywords == null || image.author == null || image.creator == null || image.capture_date == null || image.storage_date == null) response.sendRedirect("login.jsp");
+            else
+            {
+                if(image.title.isEmpty() && image.description.isEmpty() && image.keywords.isEmpty() && image.author.isEmpty() && image.creator.isEmpty() && image.capture_date.isEmpty() && image.storage_date.isEmpty())
+                    response.sendRedirect("redirect.jsp");    
+
+                else {
+                    
+                    resp = RESTConnection.searchImages(image);
+                }   
             }
-            if (!value.isEmpty()) { 
-                JSONObject resp = null;
-                String token = (String) sessionsa.getAttribute("token");
-                RESTConnection.setToken(token);
-                if (search_by.equals("title")) {
-                    resp = RESTConnection.searchByTitle(value);
-                } else if (search_by.equals("author")) {
-                    resp = RESTConnection.searchByAuthor(value);
-                } else if (search_by.equals("keyword")) {
-                    resp = RESTConnection.searchByKeywords(value);
-                } else if (search_by.equals("creation_date")) {
-                    resp = RESTConnection.searchByCreaDate(value);    
-                }
-                if(resp.get("message").equals("Images not found")) request.setAttribute("emptysearch", 1);
-                request.setAttribute("images", resp);
-                
-            } else {
-                request.setAttribute("images", null);                
-            }
+            if(resp.get("message").equals("Images not found")) request.setAttribute("emptysearch", 1);
+            request.setAttribute("images", resp);                
 
             RequestDispatcher rd = request.getRequestDispatcher("buscarImagen.jsp");
             rd.forward(request, response);

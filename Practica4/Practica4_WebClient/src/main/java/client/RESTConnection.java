@@ -145,15 +145,8 @@ public class RESTConnection {
         return json;
     }
     
-       public static JSONObject searchImages(String title, String  description, String  keywords, String author, String creator, String capture_date, String storage_date) {                                                          
-        String response = doGETConnection("/searchImages/");
-        response = response + '/' + title;
-        response = response + '/' + description;
-        response = response + '/' + keywords;
-        response = response + '/' + author;
-        response = response + '/' + creator;
-        response = response + '/' + capture_date;
-        response = response + '/' + storage_date;
+       public static JSONObject searchImages(Image image) {                                                          
+        String response = doPOSTConnection("/searchImages/",image.toJSON());
         JSONObject json = null;
         try {
             json = new JSONObject(response); 
