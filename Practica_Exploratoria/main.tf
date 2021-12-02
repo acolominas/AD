@@ -7,7 +7,7 @@ resource "aws_elastic_beanstalk_environment" "tfenvtest" {
   name        = "image-manager"
   application = aws_elastic_beanstalk_application.tftest.name
 
-  //https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.platforms.html
+  ///https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.platforms.html
   solution_stack_name = "64bit Amazon Linux 2 v4.2.8 running Tomcat 8.5 Corretto 8"
 
   //https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html
