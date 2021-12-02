@@ -14,6 +14,7 @@ resource "aws_elastic_beanstalk_environment" "tfenvtest" {
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "IamInstanceProfile"
+    
     value     = aws_iam_instance_profile.aws-elasticbeanstalk-ec2-instance-profile.name
   }
   setting {
