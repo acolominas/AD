@@ -21,6 +21,7 @@ EOF
 resource "aws_iam_policy_attachment" "aws-elasticbeanstalk-ec2-attach-S3" {
   name       = "test-attachment-1"
   roles      = [aws_iam_role.aws-elasticbeanstalk-ec2-role.name]
+  
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
 }
 
