@@ -8,11 +8,7 @@ defaults:
 on:
   push:
     paths:
-<<<<<<< HEAD
       - 'Practica_Exploratoria/**'
-=======
-      - 'Practica_Exploratoria/*'
->>>>>>> 4fb8696ac73142830ce4e8d4bfe4ab4d1f50669f
     branches:
       - main
 
