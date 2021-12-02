@@ -1,0 +1,39 @@
+name: "Terraform Apply"
+
+# Trigger when commits are pushed to the master branch
+on:
+  push:
+    paths:
+      - 'Practica_Exploratoria/*'
+    branches:
+      - main
+
+jobs:
+  terraform-plan:
+    name: "Terraform Apply"
+    runs-on: ubuntu-latest
+    steps:
+        # Checkout the code
+        # Marketplace: https://github.com/marketplace/actions/checkout
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: "Setup - Terraform CLI"
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.11
+
+      # Init pulls credentials from the .aws/credentials file by default
+      - name: "Run - Terraform Init"
+        run: terraform init -input=false
+
+      # Auto-approve prevents the requirement of human interaction
+      - name: "Run - Terraform Apply"
+        run: terraform apply -input=false -auto-approve
