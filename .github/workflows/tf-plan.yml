@@ -6,9 +6,9 @@ defaults:
 
 # Trigger when a pull request is received
 on:
-  paths:
-    - 'Practica_Exploratoria/*'
   pull_request:
+    paths:
+      - 'Practica_Exploratoria/*'
 
 jobs:
   terraform-plan:
