@@ -1,6 +1,7 @@
 import json
 import boto3
 import os
+import base64
 
 
 from boto3.dynamodb.conditions import Attr
@@ -8,8 +9,15 @@ from boto3.dynamodb.conditions import Attr
 dynamodb = boto3.resource('dynamodb')
 s3 = boto3.client('s3')
 table_name = os.environ['TABLE_NAME']
+table = dynamodb.Table(table_name)
 bucketS3 = os.environ['BUCKET_S3']
 region = os.environ['AWS_REGION']
+
+def image_exists(id):
+    res = table.scan(
+        FilterExpression=Attr('id').eq(id)
+    )
+    return res['Count'] != 0
 
 
 def store_image_s3(image,filename,identifier):
@@ -32,7 +40,6 @@ def delete_image_s3(id):
     return resp, None
 
 def store_image_dynamodb(id,title,description,keywords,author,creator,capture_date,storage_date,filename):
-    table = dynamodb.Table(table_name)
     table.put_item(
         Item={
             'id': id,
@@ -50,7 +57,6 @@ def store_image_dynamodb(id,title,description,keywords,author,creator,capture_da
     return "OK", None
 
 def lambda_handler(event, context):
-    image = event['image']
 
     resp = "OK";
 
@@ -61,27 +67,40 @@ def lambda_handler(event, context):
                 'msg': f"{field} is not present"
             }
 
-        id    = event['id']
-        title = event['title']
-        description= event['description']
-        keywords= event['keywords']
-        author= event['author']
-        creator = event['creator']
-        storage_date = event['storage_date']
-        capture_date = event['capture_date']
-        filename = event['filename']
+    id    = event['id']
+    title = event['title']
+    description= event['description']
+    keywords= event['keywords']
+    author= event['author']
+    creator = event['creator']
+    storage_date = event['storage_date']
+    capture_date = event['capture_date']
+    filename = event['filename']
 
-    if event['image_content'] != "":
+    if not image_exists(id):
+        return {
+            'status': 'fail',
+            'msg': "The image not exists"
+        }
+
+    if event.get('image_content'):
         resp, msg = delete_image_s3(id)
-            if resp != None:
-                filename, msg = store_image_s3(image,filename,id)
+        image = event['image_content']
+        if resp!=None:
+            filename, msg = store_image_s3(image,filename,id)
 
     if resp!= None:
         resp, msg = store_image_dynamodb(id,title,description,keywords,author,creator,capture_date,storage_date,filename)
 
+    if msg != None:
+        return {
+            'status': 'fail',
+            'msg': msg
+        }
+
     response = {
       'statusCode': 200,
-      'body': json.dumps(response),
+      'body': json.dumps("Image Modified!"),
       'headers': {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'

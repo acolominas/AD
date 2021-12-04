@@ -81,7 +81,7 @@ def lambda_handler(event, context):
 
     response = {
       'statusCode': 200,
-      'body': json.dumps("Image register"),
+      'body': json.dumps("Image registered!"),
       'headers': {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'

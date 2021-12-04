@@ -10,6 +10,12 @@ table_name = os.environ['TABLE_NAME']
 bucketS3 = os.environ['BUCKET_S3']
 table = dynamodb.Table(table_name)
 
+def image_exists(id):
+    res = table.scan(
+        FilterExpression=Attr('id').eq(id)
+    )
+    return res['Count'] != 0
+
 def delete_image_dynamodb(id):
     try:
         resp = table.delete_item( Key={ 'id': id } )
@@ -38,6 +44,12 @@ def lambda_handler(event, context):
         }
 
     id = event['id']
+
+    if not image_exists(id):
+        return {
+            'status': 'fail',
+            'msg': "The image not exists"
+        }
 
     resp, msg = delete_image_s3(id)
     if resp != None:

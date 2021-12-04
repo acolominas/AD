@@ -21,11 +21,10 @@ public class Image {
     public String capture_date;
     public String storage_date;
     public String filename;
-    
+    public String image_content;
+
      public String toJSON(){
         Gson gson = new Gson();
         return gson.toJson(this);
-    }   
+    }
 }
-
-
