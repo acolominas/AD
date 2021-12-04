@@ -1,11 +1,11 @@
-resource "aws_elastic_beanstalk_application" "tftest" {
+resource "aws_elastic_beanstalk_application" "image-manager-app" {
   name        = "ImageManager"
   description = "Image Manager"
 }
 
-resource "aws_elastic_beanstalk_environment" "tfenvtest" {
-  name        = "image-manager"
-  application = aws_elastic_beanstalk_application.tftest.name
+resource "aws_elastic_beanstalk_environment" "image-manager-app-pro" {
+  name        = "image-manager-pro"
+  application = aws_elastic_beanstalk_application.image-manager-app.name
 
   ///https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.platforms.html
   solution_stack_name = "64bit Amazon Linux 2 v4.2.8 running Tomcat 8.5 Corretto 8"
@@ -31,17 +31,6 @@ resource "aws_elastic_beanstalk_environment" "tfenvtest" {
   setting {
     namespace = "aws:autoscaling:asg"
     name      = "MinSize"
-    value     = "2"
+    value     = "1"
   }
-  tags = {
-    Environment = "test"
-  }
-}
-
-resource "aws_elastic_beanstalk_application_version" "default" {
-  name        = "ImageManager"
-  application = aws_elastic_beanstalk_application.tftest.name
-  description = "application version created by terraform"
-  bucket      = aws_s3_bucket.bucket-s3-app.id
-  key         = aws_s3_bucket_object.bucket-s3-app-war.id
 }
