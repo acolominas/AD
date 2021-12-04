@@ -1,14 +1,15 @@
 # Practica Exploratoria
 
-##Frontend
+![Alt text](readme_files/practica_exploratoria.jpg?raw=true "Title")
 
-Application deployed through Elastic Beanstalk Service using Tomcat 8/Nginx proxy middleware.
+## Frontend
+
+Application developed with Netbeans with Java 8.
+The application is deployed through Elastic Beanstalk Service using Tomcat 8/Nginx as middleware.
 
 ## Backend
 
 Serverless API REST built with API Gateway Service to store images to s3 and manage it.
-
-![Alt text](readme_files/practica_exploratoria.jpg?raw=true "Title")
 
 To add security to API, we will use Cognito service to authenticate & authorize the access to the API methods using OAuth 2 protocol.
 
