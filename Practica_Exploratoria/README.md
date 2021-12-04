@@ -1,4 +1,10 @@
-# api-rest-aws
+# Practica Exploratoria
+
+##Frontend
+
+Application deployed through Elastic Beanstalk Service using Tomcat 8/Nginx proxy middleware.
+
+## Backend
 
 Serverless API REST built with API Gateway Service to store images to s3 and manage it.
 
@@ -12,6 +18,8 @@ Physical images are stored in S3 Bucket and its metadata is stored in a DynamoDB
 
 ### AWS Services Involved
 
+* Elastic Beansatalk
+* Route53
 * API Gateway
 * Lambda
 * S3
