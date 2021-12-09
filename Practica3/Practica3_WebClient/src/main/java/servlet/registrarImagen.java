@@ -24,6 +24,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import client.SOAPConnection;
 import client.FileUtil;
+import java.text.DateFormat;
 
 /**
  *
@@ -55,7 +56,12 @@ public class registrarImagen extends HttpServlet {
                 response.sendRedirect("login.jsp");
                 return;
             }
-
+            Date date = new Date();
+            //Pattern for showing milliseconds in the time "SSS"
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            String stringDate = sdf.format(date);
+            System.out.println(stringDate);
+            
             String title = request.getParameter("title");
             String description = request.getParameter("description");
             String keywords = request.getParameter("keywords");
@@ -81,6 +87,8 @@ public class registrarImagen extends HttpServlet {
                 Format f = new SimpleDateFormat("yyyy-MM-dd");
                 String storage_date = f.format(new Date());
                 
+                System.out.println(System.currentTimeMillis());
+                
                 String filename = FileUtil.getFilename(part);
                 filename = String.valueOf(id + 1) + "_" + filename;
                 
@@ -94,7 +102,16 @@ public class registrarImagen extends HttpServlet {
                     image.setCaptureDate(capture_date);
                     image.setStorageDate(storage_date);
                     image.setFilename(filename);
-                    SOAPConnection.registerImage(image);                   
+                    SOAPConnection.registerImage(image);
+                    
+                    date = new Date();
+                     //Pattern for showing milliseconds in the time "SSS"
+                    sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                    stringDate = sdf.format(date);
+                    System.out.println(stringDate);
+                    
+                    System.out.println(System.currentTimeMillis());
+                    
                     response.sendRedirect("menu.jsp");
                 }
 

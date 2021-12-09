@@ -58,6 +58,8 @@ public class registrarImagen extends HttpServlet {
             String author = request.getParameter("author");
             String capture_date = request.getParameter("capture_date");
             Part part = request.getPart("image");
+            
+            System.out.println(System.currentTimeMillis());
 
             if (title == null || description == null || keywords == null || author == null || capture_date == null) {
                 response.sendRedirect("login.jsp");
@@ -79,7 +81,8 @@ public class registrarImagen extends HttpServlet {
                     image.creator = user;
                     image.capture_date = capture_date;
                     image.filename = filename;
-                    if(RESTConnection.registerImage(image)) {                   
+                    if(RESTConnection.registerImage(image)) {   
+                        System.out.println(System.currentTimeMillis());
                         response.sendRedirect("menu.jsp");
                     }
                     else {

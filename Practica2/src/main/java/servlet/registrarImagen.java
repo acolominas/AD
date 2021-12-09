@@ -53,7 +53,7 @@ public class registrarImagen extends HttpServlet {
                 response.sendRedirect("login.jsp");
                 return;
             }
-
+            System.out.println(System.currentTimeMillis());
             String title = request.getParameter("title");
             String description = request.getParameter("description");
             String keywords = request.getParameter("keywords");
@@ -86,6 +86,7 @@ public class registrarImagen extends HttpServlet {
                     Image img = new Image("no_importa", title, description, keywords, author, user, capture_date, storage_date, filename);
                     DB.CreateImage(img);
                     response.sendRedirect("menu.jsp");
+                    System.out.println(System.currentTimeMillis());
                 }
 
             }

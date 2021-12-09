@@ -37,3 +37,4 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+/Practica_Exploratoria/Application_WebClient/target/

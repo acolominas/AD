@@ -70,7 +70,7 @@ public class registrarImagen extends HttpServlet {
                 rd.forward(request, response);
             } else {                                                 
                 String filename = FileUtil.getNewFilename(part);                          
-                if (RESTConnection.uploadImage(part,filename)) {
+                //if (RESTConnection.uploadImage(part,filename)) {
                     Image image = new Image();
                     image.title = title;
                     image.description = description;
@@ -87,7 +87,7 @@ public class registrarImagen extends HttpServlet {
                         RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                         rd.forward(request, response);
                     }
-                }
+                //}
 
             }
         }
