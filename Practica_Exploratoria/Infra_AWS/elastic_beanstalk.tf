@@ -33,4 +33,10 @@ resource "aws_elastic_beanstalk_environment" "image-manager-app-pro" {
     name      = "MinSize"
     value     = "1"
   }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:application:environment"
+    name      = "API_Endpoint"
+    value     = "${aws_api_gateway_stage.example.invoke_url}"
+  }
 }
