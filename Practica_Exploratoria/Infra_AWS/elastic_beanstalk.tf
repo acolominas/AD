@@ -52,5 +52,11 @@ resource "aws_elastic_beanstalk_environment" "image-manager-app-pro" {
     value     = "arn:aws:acm:eu-west-1:004914726163:certificate/3fae721b-cb53-4892-9f77-2b9952ed60be"
   }
 
+  setting {
+    namespace = "aws:elbv2:listener:443"
+    name      = "SSLCertificateArns"
+    value     = "arn:aws:acm:eu-west-1:004914726163:certificate/3fae721b-cb53-4892-9f77-2b9952ed60be"
+  }
+
 
 }
