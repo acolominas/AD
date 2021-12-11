@@ -1,2 +1,12 @@
 com/mycompany/practica1/JAXRSConfiguration.class
+servlet/eliminarImagen.class
+servlet/registrarImagen.class
 com/mycompany/practica1/resources/JavaEE8Resource.class
+DISK/ImageDisk.class
+servlet/crearUsuario.class
+servlet/buscarImagen.class
+DB/DB.class
+App/User.class
+servlet/login.class
+App/Image.class
+servlet/modificarImagen.class

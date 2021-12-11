@@ -89,8 +89,8 @@ public class modificarImagen extends HttpServlet {
                     Format f = new SimpleDateFormat("yyyy-MM-dd");
                     storage_date = f.format(new Date());
                     filename = FileUtil.getNewFilename(part);                    
-                    RESTConnection.uploadImage(part, filename);
-                    RESTConnection.removeImage(id);
+                    //RESTConnection.uploadImage(part, filename);
+                    //RESTConnection.removeImage(id);
                     
                 }   
                 Image image = new Image();
