@@ -37,7 +37,7 @@ resource "aws_elastic_beanstalk_environment" "image-manager-app-pro" {
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name      = "API_Endpoint"
-    value     = "${aws_api_gateway_stage.example.invoke_url}"
+    value     = aws_api_gateway_stage.example.invoke_url
   }
 
   setting {
