@@ -45,32 +45,25 @@ else response.sendRedirect("login.jsp");
         <%             
             String token = (String) sessionsa.getAttribute("token");
             RESTConnection.setToken(token);
-            JSONObject resp = RESTConnection.listImages(); 
-            if (resp.getString("status").equals("OK")) {
-                JSONArray images = resp.getJSONArray("body");
-            
-                for (int i=0; i<images.length(); i++){
-                    JSONObject image = images.getJSONObject(i);
-                    out.println("<tr>");
-                    out.println("<td>"+image.get("title")+"</td>");
-                    out.println("<td>"+image.get("description")+"</td>");
-                    out.println("<td>"+image.get("keywords")+"</td>");
-                    out.println("<td>"+image.get("author")+"</td>");
-                    out.println("<td>"+image.get("creator")+"</td>");
-                    out.println("<td>"+image.get("storage_date")+"</td>");
-                    out.println("<td>"+image.get("capture_date")+"</td>");
-                    out.println("<td>"+image.get("filename")+"</td>"); 
-
-                    JSONObject resp_img = RESTConnection.downloadImage(image.get("id").toString());
-                    String base64Image = "";
-                    if (resp_img.get("status").equals("OK")) base64Image = resp_img.get("body").toString();                
-                    out.println("<td><a href='display.jsp?id="+image.get("id")+"'><img src='data:image/jpg;base64,"+base64Image+"' width='75' height='50'></a></a></td>");
-                    if (user.equals(image.get("creator"))) {
-                        out.println("<td><a href='modificarImagen.jsp?id="+image.get("id")+"'>Modify</a> / <a href='eliminarImagen.jsp?id="+image.get("id")+"'>Delete</a><td>");
-                    }
-                    out.println("</tr>");  
+            JSONArray images = RESTConnection.listImages();                         
+            for (int i=0; i<images.length(); i++){
+                JSONObject image = images.getJSONObject(i);
+                out.println("<tr>");
+                out.println("<td>"+image.get("title")+"</td>");
+                out.println("<td>"+image.get("description")+"</td>");
+                out.println("<td>"+image.get("keywords")+"</td>");
+                out.println("<td>"+image.get("author")+"</td>");
+                out.println("<td>"+image.get("creator")+"</td>");
+                out.println("<td>"+image.get("storage_date")+"</td>");
+                out.println("<td>"+image.get("capture_date")+"</td>");
+                out.println("<td>"+image.get("filename")+"</td>");                                                           
+                out.println("<td><a href='"+image.get("object_url")+"'><img src='"+image.get("object_url")+"' width='75' height='50'></a></a></td>");
+                if (user.equals(image.get("creator"))) {
+                    out.println("<td><a href='modificarImagen.jsp?id="+image.get("id")+"'>Modify</a> / <a href='eliminarImagen.jsp?id="+image.get("id")+"'>Delete</a><td>");
                 }
-            }               
+                out.println("</tr>");  
+            }
+                          
         %>
         </table>
         </div>

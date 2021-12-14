@@ -20,7 +20,7 @@ String id = request.getParameter("id");
 String token = (String) sessionsa.getAttribute("token");
 RESTConnection.setToken(token);
 JSONObject resp = RESTConnection.searchById(Integer.valueOf(id));
-JSONObject image = resp.getJSONArray("body").getJSONObject(0);
+JSONObject image = resp.getJSONArray("Items").getJSONObject(0);
 if (image == null || !user.equals(image.get("creator"))){
      response.sendRedirect("menu.jsp");
 }
@@ -59,9 +59,7 @@ if (image == null || !user.equals(image.get("creator"))){
             out.println("<td><label>"+image.get("storage_date")+"</label></td>");
             out.println("<td><label>"+image.get("capture_date")+"</label></td>");
             out.println("<td><label>"+image.get("filename")+"</label></td>");
-            //byte[] img = SOAPConnection.downloadImage(image.getFilename());
-            //String base64Image = Base64.getEncoder().encodeToString(img);
-            //out.println("<td><a href='display.jsp?id="+image.get("id")+"'><img src='data:image/jpg;base64,"+base64Image+"''width='75' height='50'></a></a></td>");
+            out.println("<td><a href='"+image.get("object_url")+"'><img src='"+image.get("object_url")+"' width='75' height='50'></a></a></td>");
             out.println("</tr>");         
         %>
            

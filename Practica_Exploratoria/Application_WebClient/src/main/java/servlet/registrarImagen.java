@@ -37,7 +37,7 @@ public class registrarImagen extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException{
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
@@ -68,30 +68,29 @@ public class registrarImagen extends HttpServlet {
                 request.setAttribute("error_type", "registrar");
                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                 rd.forward(request, response);
-            } else {                                                 
-                String filename = FileUtil.getNewFilename(part);                          
-                //if (RESTConnection.uploadImage(part,filename)) {
-                    Image image = new Image();
-                    image.title = title;
-                    image.description = description;
-                    image.keywords = keywords;
-                    image.author = author;
-                    image.creator = user;
-                    image.capture_date = capture_date;
-                    image.filename = filename;
-                    if(RESTConnection.registerImage(image)) {                   
-                        response.sendRedirect("menu.jsp");
-                    }
-                    else {
-                        request.setAttribute("error_type", "registrar");
-                        RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
-                        rd.forward(request, response);
-                    }
-                //}
-
-            }
-        }
+            } else {                                                           
+                Image image = new Image();
+                image.title = title;
+                image.description = description;
+                image.keywords = keywords;
+                image.author = author;
+                image.creator = user;
+                image.capture_date = capture_date;
+                image.filename = FileUtil.getNewFilename(part);             
+                image.image_content = FileUtil.getStringBase64(part);
+                
+                if(RESTConnection.registerImage(image)) {                   
+                    response.sendRedirect("menu.jsp");
+                }
+                else {
+                    request.setAttribute("error_type", "registrar");
+                    RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                    rd.forward(request, response);
+                }
+            }        
+         }
     }
+    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

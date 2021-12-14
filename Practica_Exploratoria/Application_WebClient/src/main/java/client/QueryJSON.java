@@ -12,7 +12,7 @@ import com.google.gson.Gson;
  * @author alumne
  */
 public class QueryJSON {
-    public String image_id;
+    public String id;
     public String filename;
     public String image; 
     

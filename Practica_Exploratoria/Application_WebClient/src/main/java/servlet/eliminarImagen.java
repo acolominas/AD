@@ -58,7 +58,7 @@ public class eliminarImagen extends HttpServlet {
                 response.sendRedirect("login.jsp");
             } else {
                 JSONObject resp = RESTConnection.searchById(Integer.valueOf(id));
-                JSONObject image = resp.getJSONArray("body").getJSONObject(0);
+                JSONObject image = resp.getJSONArray("Items").getJSONObject(0);
                 if(image.get("creator").equals(user)) {                    
                     if(RESTConnection.deleteImage(id).get("status").equals("OK")) {                    
                         out.println("Deleted the file: " + "Images/" + image.get("filename"));

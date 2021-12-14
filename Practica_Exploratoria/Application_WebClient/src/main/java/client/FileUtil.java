@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
+import java.util.Base64;
 import javax.servlet.http.Part;
 
 /**
@@ -58,5 +59,15 @@ public class FileUtil {
             }
         }
         return null;
-    }    
+    }
+    
+    public static String getStringBase64(Part part) {
+        try {
+            InputStream inputStream = part.getInputStream();
+            byte[] fileContent = FileUtil.getFileContent(inputStream);
+            return Base64.getEncoder().encodeToString(fileContent);
+        }catch (IOException e) {
+        }
+        return null;
+    }
 }
