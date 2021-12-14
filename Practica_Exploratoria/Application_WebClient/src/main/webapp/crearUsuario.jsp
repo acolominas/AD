@@ -25,7 +25,8 @@ if(sessionsa != null && sessionsa.getAttribute("username") != null) response.sen
             <!--  Campos del formulario -->
             Username <input type="text" name="username"/> <br/>
             Password <input type="password" name="password_1"/> <br/>
-            Repeat Password <input type="password" name="password_2"/> <br/>            
+            Repeat Password <input type="password" name="password_2"/> <br/>  
+            Email   <input type="text" name="email"/> <br/>
         <input type="submit" value="Create User" />
         </form>
         </div>

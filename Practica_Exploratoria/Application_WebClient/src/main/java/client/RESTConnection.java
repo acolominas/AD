@@ -17,6 +17,7 @@ import java.net.URL;
 import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.Part;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +27,8 @@ import org.json.JSONObject;
  * @author alumne
  */
 public class RESTConnection {
-    private static final String url = "https://api.image-manager.local/v1";
+    private static final String url = "https://cfo0qzzf43.execute-api.eu-west-1.amazonaws.com/v1";                                 
+    //private static final String url = System.getenv("API_Endpoint");
     private static final String charset = "UTF-8";
     private static String token = null;
 
@@ -34,7 +36,8 @@ public class RESTConnection {
     private static String doPOSTConnection(String path, String query) {
         try {
 
-            HttpURLConnection postConnection = (HttpURLConnection) new URL(url + path).openConnection();
+            System.out.println(url);
+            HttpsURLConnection postConnection = (HttpsURLConnection) new URL(url + path).openConnection();
             postConnection.setRequestMethod("POST");
             postConnection.setDoOutput(true); // Triggers POST.
             postConnection.setRequestProperty("Accept-Charset", charset);
@@ -64,13 +67,13 @@ public class RESTConnection {
 
     private static String doGETConnection(String path){
         try {
-            HttpURLConnection getConnection = (HttpURLConnection) new URL(url + path).openConnection();
+            HttpsURLConnection getConnection = (HttpsURLConnection) new URL(url + path).openConnection();
             getConnection.setRequestMethod("GET");
             getConnection.setRequestProperty("Authorization", token);
 
             int responseCode = getConnection.getResponseCode();
 
-            if (responseCode == HttpURLConnection.HTTP_OK) {
+            if (responseCode == HttpsURLConnection.HTTP_OK) {
 
                 InputStream  inputStream = getConnection.getInputStream();
                 BufferedReader responseReader = new BufferedReader(
@@ -109,9 +112,9 @@ public class RESTConnection {
         try {
             String response = doPOSTConnection("/users/token",user.toJSON());
             JSONObject json = new JSONObject(response);
-            String new_token = json.get("body").toString();
+            String new_token = json.get("id_token").toString();
             System.out.println(response);
-            if (json.get("status").equals("OK")) {
+            if (json.get("status").equals("success")) {
                 return new_token;
             }
             else return null;
@@ -127,7 +130,7 @@ public class RESTConnection {
             String response = doPOSTConnection("/users",user.toJSON());
             JSONObject json = new JSONObject(response);
             System.out.println(response);
-            return json.get("status").equals("OK");
+            return json.get("status").equals("success");
         } catch (JSONException e){
             return false;
 

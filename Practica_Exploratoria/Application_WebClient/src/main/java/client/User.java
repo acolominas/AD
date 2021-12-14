@@ -13,7 +13,9 @@ import com.google.gson.Gson;
  */
 public class User {
     public String username;
+    public String email;
     public String password; 
+    
     
      public String toJSON(){
         Gson gson = new Gson();

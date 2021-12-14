@@ -43,13 +43,15 @@ public class crearUsuario extends HttpServlet {
             String password_1 = request.getParameter("password_1");
             String password_2 = request.getParameter("password_2");
             String username = request.getParameter("username");
-            if (password_1 == null || password_2 == null || username == null) {
+            String email = request.getParameter("email");
+            if (password_1 == null || password_2 == null || username == null || email == null) {
                 response.sendRedirect("login.jsp");
             } else {
-                if (!password_1.isEmpty() && !password_2.isEmpty() && !username.isEmpty() && password_1.equals(password_2)) {
+                if (!password_1.isEmpty() && !password_2.isEmpty() && !username.isEmpty() && password_1.equals(password_2) && !email.isEmpty()) {
                     User user = new User();
                     user.username = username;
                     user.password = password_1;
+                    user.email = email;
                     if(RESTConnection.createUser(user)) { 
                         response.sendRedirect("login.jsp");
                     }else {
