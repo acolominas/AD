@@ -99,8 +99,8 @@ def lambda_handler(event, context):
         }
 
     response = {
-      'statusCode': 200,
-      'body': json.dumps("Image Modified!"),
+      'status': 'success',
+      'msg': 'Image Modified!',
       'headers': {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'

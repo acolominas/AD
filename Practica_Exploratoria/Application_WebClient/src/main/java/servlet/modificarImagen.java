@@ -84,15 +84,6 @@ public class modificarImagen extends HttpServlet {
                 RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
                 rd.forward(request, response);
             } else {
-                Boolean new_image = part.getSize() > 0;
-                if (new_image) {
-                    Format f = new SimpleDateFormat("yyyy-MM-dd");
-                    storage_date = f.format(new Date());
-                    filename = FileUtil.getNewFilename(part);                    
-                    //RESTConnection.uploadImage(part, filename);
-                    //RESTConnection.removeImage(id);
-                    
-                }   
                 Image image = new Image();
                 image.id = id;
                 image.title = title;
@@ -102,10 +93,21 @@ public class modificarImagen extends HttpServlet {
                 image.creator = creator;
                 image.storage_date = storage_date;
                 image.capture_date = capture_date;
-                image.filename = filename;           
-                RESTConnection.modifyImage(image);               
-
-                response.sendRedirect("menu.jsp");
+                image.filename = filename;  
+                
+                if (part.getSize() > 0) {                  
+                    image.filename = FileUtil.getNewFilename(part);
+                    image.image_content = FileUtil.getStringBase64(part);                                                   
+                }                        
+                               
+                if(RESTConnection.modifyImage(image)) {                   
+                    response.sendRedirect("menu.jsp");
+                }
+                else {
+                    request.setAttribute("error_type", "modificar");
+                    RequestDispatcher rd = request.getRequestDispatcher("error.jsp");
+                    rd.forward(request, response);
+                }
 
             }
 
