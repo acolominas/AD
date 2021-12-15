@@ -28,7 +28,7 @@ import org.json.JSONObject;
  * @author alumne
  */
 public class RESTConnection {
-    private static final String url = " https://bkw1jnyst4.execute-api.eu-west-1.amazonaws.com/v1";                                 
+    private static final String url = "https://pxfnmpq2xe.execute-api.eu-west-1.amazonaws.com/v1";                                 
     //private static final String url = System.getenv("API_Endpoint");
     private static final String charset = "UTF-8";
     private static String token = null;
@@ -252,7 +252,7 @@ public class RESTConnection {
             String response = doPOSTConnection("/images",image.toJSON());
             JSONObject json = new JSONObject(response);
             System.out.println(response);
-            return json.get("body").equals("Image Registered!");
+            return json.get("status").equals("success");
         } catch (JSONException e){
             return false;
 
@@ -264,21 +264,21 @@ public class RESTConnection {
             String response = doPOSTConnection("/images",image.toJSON());
             JSONObject json = new JSONObject(response);
             System.out.println(response);
-            return json.get("status").equals("OK");
+            return json.get("status").equals("success");
         } catch (JSONException e){
             return false;
 
         }
     }
 
-    public static JSONObject deleteImage(String image_id) {
+    public static Boolean deleteImage(String image_id) {
         JSONObject json = null;
         QueryJSON query = new QueryJSON();
         try {
             query.id = image_id;
             String response = doDELETEConnection("/images",query.toJSON());
             json = new JSONObject(response);
-            return json;
+            return json.get("status").equals("success");
         } catch (JSONException e){
             return null;
 

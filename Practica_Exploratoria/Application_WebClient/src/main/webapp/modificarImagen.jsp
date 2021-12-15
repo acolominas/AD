@@ -19,7 +19,7 @@ String id = request.getParameter("id");
 String token = (String) sessionsa.getAttribute("token");
 RESTConnection.setToken(token);          
 JSONObject resp = RESTConnection.searchById(Integer.valueOf(id));
-JSONObject image = resp.getJSONArray("body").getJSONObject(0);
+JSONObject image = resp.getJSONArray("Items").getJSONObject(0);
 if (image == null || !user.equals(image.get("creator"))){
      response.sendRedirect("menu.jsp");
 }
@@ -47,6 +47,7 @@ if (image == null || !user.equals(image.get("creator"))){
                 <th>Capture Date</th>
                 <th>Filename</th>
                 <th>Image</th>
+                <th>Change Image</th>
             </tr>
         <%  
             out.println("<tr>");
@@ -62,6 +63,7 @@ if (image == null || !user.equals(image.get("creator"))){
             out.println("<td><input type='date' value='"+image.get("capture_date")+"' name='capture_date'/></td>");
             out.println("<td><label>"+image.get("filename")+"</label></td>");
             out.println("<input type='hidden' name='filename' value='"+image.get("filename")+"'/>");
+            out.println("<td><a href='"+image.get("object_url")+"'><img src='"+image.get("object_url")+"' width='75' height='50'></a></a></td>");         
             %>
             <td><input type='file' name='image'/></td>
             </tr>    
