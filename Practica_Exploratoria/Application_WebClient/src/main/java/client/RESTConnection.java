@@ -28,7 +28,7 @@ import org.json.JSONObject;
  * @author alumne
  */
 public class RESTConnection {
-    private static final String url = "https://pxfnmpq2xe.execute-api.eu-west-1.amazonaws.com/v1";                                 
+    private static final String url = " https://jgdzl48x54.execute-api.eu-west-1.amazonaws.com/v1";                                 
     //private static final String url = System.getenv("API_Endpoint");
     private static final String charset = "UTF-8";
     private static String token = null;
@@ -40,6 +40,38 @@ public class RESTConnection {
             System.out.println(url);
             HttpsURLConnection postConnection = (HttpsURLConnection) new URL(url + path).openConnection();
             postConnection.setRequestMethod("POST");
+            postConnection.setDoOutput(true); // Triggers POST.
+            postConnection.setRequestProperty("Accept-Charset", charset);
+            postConnection.setRequestProperty("Content-Type", "application/json;charset=" + charset);
+            postConnection.setRequestProperty("Authorization", token);
+            OutputStream output = postConnection.getOutputStream();
+            output.write(query.getBytes(charset));
+            output.close();
+            InputStream  inputStream = postConnection.getInputStream();
+            BufferedReader responseReader = new BufferedReader(new InputStreamReader(inputStream, charset));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            while ((inputLine = responseReader.readLine()) != null) {
+                response.append(inputLine);
+            }
+            responseReader.close();
+            return response.toString();
+        }catch (IOException e) {
+                // connection close failed.
+                System.err.println(e.getMessage());
+                System.out.println("oks");
+                return null;
+
+        }
+
+    }
+    
+    private static String doPUTConnection(String path, String query) {
+        try {
+
+            System.out.println(url);
+            HttpsURLConnection postConnection = (HttpsURLConnection) new URL(url + path).openConnection();
+            postConnection.setRequestMethod("PUT");
             postConnection.setDoOutput(true); // Triggers POST.
             postConnection.setRequestProperty("Accept-Charset", charset);
             postConnection.setRequestProperty("Content-Type", "application/json;charset=" + charset);
@@ -261,7 +293,7 @@ public class RESTConnection {
 
     public static Boolean modifyImage(Image image) {
         try {
-            String response = doPOSTConnection("/images",image.toJSON());
+            String response = doPUTConnection("/images",image.toJSON());
             JSONObject json = new JSONObject(response);
             System.out.println(response);
             return json.get("status").equals("success");
