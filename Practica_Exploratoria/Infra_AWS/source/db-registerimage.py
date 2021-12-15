@@ -75,16 +75,16 @@ def lambda_handler(event, context):
 
     if msg != None:
         return {
-            'statusCode': 500,
-            'body': json.dumps("Error:Image not registered!"),
+            'status': "fail",
+            'msg': "Image not registered!",
             'headers': {
               'Content-Type': 'application/json',
               'Access-Control-Allow-Origin': '*'
             }
         }
     response = {
-      'statusCode': 200,
-      'body': json.dumps("Image registered!"),
+      'status': "success",
+      'msg': "Image registered!",
       'headers': {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
