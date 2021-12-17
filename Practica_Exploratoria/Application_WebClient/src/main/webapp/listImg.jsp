@@ -16,7 +16,10 @@
 HttpSession sessionsa = request.getSession(false);
 String user = null;
 if(sessionsa != null && sessionsa.getAttribute("username") != null) user = (String) sessionsa.getAttribute("username");      
-else response.sendRedirect("login.jsp"); 
+else {
+    response.sendRedirect("login.jsp");
+    return;
+ }
 %>
 <!DOCTYPE html>
 <html>
