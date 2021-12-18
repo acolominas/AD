@@ -123,6 +123,7 @@ resource "aws_lambda_function" "lambda-db-searchimageby" {
   }
 }
 
+
 resource "aws_lambda_function" "lambda-auth-login" {
   function_name    = "lambda-auth-login"
   description      = "A function to check user and password"

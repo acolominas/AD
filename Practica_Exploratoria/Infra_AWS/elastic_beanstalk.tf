@@ -31,7 +31,7 @@ resource "aws_elastic_beanstalk_environment" "image-manager-app-pro" {
   setting {
     namespace = "aws:autoscaling:asg"
     name      = "MinSize"
-    value     = "1"
+    value     = "2"
   }
 
   setting {
@@ -56,6 +56,42 @@ resource "aws_elastic_beanstalk_environment" "image-manager-app-pro" {
     namespace = "aws:elbv2:listener:443"
     name      = "SSLCertificateArns"
     value     = "arn:aws:acm:eu-west-1:004914726163:certificate/3fae721b-cb53-4892-9f77-2b9952ed60be"
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:environment:process:default"
+    name      = "StickinessEnabled"
+    value     = "true"
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:environment:process:default"
+    name      = "StickinessLBCookieDuration"
+    value     = "86400"
+  }
+
+  setting {
+    namespace = "aws:autoscaling:trigger"
+    name      = "MeasureName"
+    value     = "CPUUtilization"
+  }
+
+  setting {
+    namespace = "aws:autoscaling:trigger"
+    name      = "UpperThreshold"
+    value     = "70"
+  }
+
+  setting {
+    namespace = "aws:autoscaling:trigger"
+    name      = "LowerThreshold"
+    value     = "30"
+  }
+
+  setting {
+    namespace = "aws:autoscaling:trigger"
+    name      = "Unit"
+    value     = "Percent"
   }
 
 
