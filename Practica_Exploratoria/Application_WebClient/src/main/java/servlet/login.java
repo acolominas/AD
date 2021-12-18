@@ -69,7 +69,9 @@ public class login extends HttpServlet {
                     HttpSession session = request.getSession();
                     session.setAttribute("username", username);
                     session.setAttribute("token", res);
-                    response.sendRedirect("menu.jsp");
+                    //response.sendRedirect("menu.jsp");
+                    RequestDispatcher rd = request.getRequestDispatcher("menu.jsp");
+                    rd.forward(request, response);
                 } else {
                     request.setAttribute("error_type", "login");
                     RequestDispatcher rd = request.getRequestDispatcher("error.jsp");

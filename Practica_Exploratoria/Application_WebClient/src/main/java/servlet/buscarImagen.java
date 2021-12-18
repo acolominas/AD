@@ -46,7 +46,9 @@ public class buscarImagen extends HttpServlet {
             /* TODO output your page here. You may use following sample code. */
             HttpSession sessionsa = request.getSession(false);
             if (sessionsa == null || sessionsa.getAttribute("username") == null) {
-                response.sendRedirect("login.jsp");
+                //response.sendRedirect("login.jsp");
+                RequestDispatcher rd = request.getRequestDispatcher("login.jsp");
+                rd.forward(request, response);
                 return;
             }         
             
@@ -56,7 +58,9 @@ public class buscarImagen extends HttpServlet {
             String search_by = request.getParameter("search_by");
             String value = request.getParameter("value");
             if (search_by == null || value == null) {
-                response.sendRedirect("menu.jsp");
+                //response.sendRedirect("menu.jsp");
+                RequestDispatcher rd = request.getRequestDispatcher("menu.jsp");
+                rd.forward(request, response);
                 return;
             }
             if (!value.isEmpty()) {               

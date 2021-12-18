@@ -20,15 +20,30 @@ if(sessionsa != null && sessionsa.getAttribute("username") != null) response.sen
     </head>
     <body>
         <div align="center">
-        <h1>Crear Usuario</h1>
-        <form action="crearUsuario" method = "POST">
-            <!--  Campos del formulario -->
-            Username <input type="text" name="username"/> <br/>
-            Password <input type="password" name="password_1"/> <br/>
-            Repeat Password <input type="password" name="password_2"/> <br/>  
-            Email   <input type="text" name="email"/> <br/>
-        <input type="submit" value="Create User" />
-        </form>
+        <h1>Crear Usuario</h1>        
+            <form action="crearUsuario" method = "POST">
+                <table>
+                    <tr>
+                        <td>Username</td>
+                        <td><input type="text" name="username"/></td>
+                    </tr>
+                    <tr>
+                        <td>Password</td>
+                        <td><input type="password" name="password_1"/></td>
+                    </tr>
+                    <tr>
+                        <td>Repeat Password</td>
+                        <td><input type="password" name="password_2"/></td>
+                    </tr>                        
+                    <tr>
+                        <td>Email</td>
+                        <td><input type="text" name="email"/></td>
+                    </tr>
+                    <tr>
+                        <td><input type="submit" value="Create User"/></td>
+                    </tr>
+                </table>
+            </form>
         </div>
         <div align="center">
         <a href="login.jsp">Cancelar</a> 

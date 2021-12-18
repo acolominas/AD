@@ -24,7 +24,7 @@ import org.json.JSONObject;
  * @author alumne
  */
 public class RESTConnection {
-    private static final String url = " https://k4cy9qrxid.execute-api.eu-west-1.amazonaws.com/v1";
+    private static final String url = "https://iyem8anlr4.execute-api.eu-west-1.amazonaws.com/v1";
     private static final String charset = "UTF-8";
     private static String token = null;
     
