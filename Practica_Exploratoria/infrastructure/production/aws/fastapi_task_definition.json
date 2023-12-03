@@ -1,0 +1,24 @@
+{
+    "family": "aci-ecstsk-fastapi-pro-euw1-01",
+    "taskRoleArn": "arn:aws:iam::754791533116:role/aci-iamrole-fastapi-pro-euw1-01",
+    "executionRoleArn": "arn:aws:iam::754791533116:role/aci-iamrole-fastapi-pro-euw1-01",
+    "containerDefinitions": [
+        {
+            "name": "dummy",
+            "image": "nginx",
+            "cpu": 100,
+            "memory": 100,
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 0,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": []
+        }
+    ]
+}
